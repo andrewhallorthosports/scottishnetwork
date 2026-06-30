@@ -154,7 +154,7 @@ body {
   color: var(--navy); letter-spacing: -0.02em;
   margin-top: 8px; line-height: 1.2;
 }
-.study-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.study-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 .study-card {
   background: var(--white);
   border: 1px solid var(--border); border-top: 3px solid var(--accent);
@@ -366,11 +366,11 @@ body {
         <div class="hero-stat-l">Partner Institutions</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-n">2</div>
+        <div class="hero-stat-n">3</div>
         <div class="hero-stat-l">Published Studies</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-n">BJJ &amp; BJSM</div>
+        <div class="hero-stat-n">BJJ &middot; BJSM &middot; BJO</div>
         <div class="hero-stat-l">Publication Journals</div>
       </div>
     </div>
@@ -433,6 +433,18 @@ body {
         <div class="study-journal">British Journal of Sports Medicine &middot; Epub ahead of print, 2026 &middot; doi:10.1136/bjsports-2025-111225</div>
         <p class="study-abstract">A PRISMA-ScR scoping review of 199 studies examining weight-loss strategies in adults with obesity and hip or knee osteoarthritis, with focus on the emerging role of GLP-1 receptor agonists. Of 36 studies directly assessing GLP-1-RAs, 14 reported original data. Evidence is strongest for knee OA; hip OA data remain limited. GLP-1-RAs are recommended as adjuncts within supervised, multimodal musculoskeletal care.</p>
         <a href="glp1-oa/" class="study-link">
+          View study page
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <div class="study-card fade-up">
+        <div class="study-tag">Scoping Review &middot; Patient &amp; Public Perception</div>
+        <h3 class="study-title">Perceptions of Robot-Assisted Arthroplasty Among Patients and the Public</h3>
+        <p class="study-authors">Morrison SR, Clement ND, Clarke JV, Gee C, Chopra S, Hall AJ</p>
+        <div class="study-journal">Bone &amp; Joint Open &middot; 2026;7(6):733&ndash;743 &middot; doi:10.1302/2633-1462.76.BJO-2026-0007.R1</div>
+        <p class="study-abstract">A PRISMA-ScR scoping review of 16 studies (3,957 participants) exploring patient and public perceptions of robot-assisted surgery (RAS) in arthroplasty. Four themes emerged: interest, understanding, concerns, and influences on preference. Patients showed high interest but commonly overestimated RAS benefits and prevalence of use, with trust in the operating surgeon remaining a stronger influence than the technology itself.</p>
+        <a href="ras-perceptions/" class="study-link">
           View study page
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
@@ -537,7 +549,19 @@ body {
       <div class="team-card fade-up">
         <div class="team-name">S. Morrison</div>
         <div class="team-role">School of Medicine, University of St Andrews; Golden Jubilee University National Hospital</div>
-        <div class="team-inst">GLP-1 OA</div>
+        <div class="team-inst">GLP-1 OA &middot; RAS Perceptions</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">C. Gee</div>
+        <div class="team-role">School of Medicine, University of St Andrews; Golden Jubilee University National Hospital; University of Strathclyde</div>
+        <div class="team-inst">GLP-1 OA &middot; RAS Perceptions</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">S. Chopra</div>
+        <div class="team-role">Golden Jubilee University National Hospital</div>
+        <div class="team-inst">RAS Perceptions</div>
       </div>
 
     </div>
