@@ -285,31 +285,74 @@ a.inst-card:hover { background: var(--pale); cursor: pointer; }
 
 /* CONTACT */
 .contact {
-  background: var(--white); padding: 64px 32px;
-  border-bottom: 1px solid var(--border);
+  background: var(--navy); color: var(--white); padding: 72px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .contact-inner {
   max-width: 960px; margin: 0 auto;
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 56px; align-items: start;
 }
-.contact-body { font-size: 0.88rem; color: var(--stone); line-height: 1.7; margin-top: 16px; }
+.contact .section-eyebrow { color: rgba(255,255,255,0.40); }
+.contact .section-title { color: var(--white); }
+.contact-body { font-size: 0.88rem; color: rgba(255,255,255,0.72); line-height: 1.7; margin-top: 16px; }
 .contact-detail { display: flex; flex-direction: column; gap: 14px; margin-top: 28px; }
 .contact-row { display: flex; gap: 14px; align-items: flex-start; }
 .contact-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px; font-weight: 700;
   letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--accent); min-width: 80px; padding-top: 2px; flex-shrink: 0;
+  color: #5BB8D4; min-width: 80px; padding-top: 2px; flex-shrink: 0;
 }
-.contact-value { font-size: 0.85rem; color: var(--ink); }
-.contact-value a { color: var(--accent); text-decoration: none; }
+.contact-value { font-size: 0.85rem; color: rgba(255,255,255,0.88); }
+.contact-value a { color: #5BB8D4; text-decoration: none; }
 .contact-value a:hover { text-decoration: underline; }
 .contact-note {
-  padding: 18px 20px; background: var(--pale);
-  border-left: 2px solid var(--accent); margin-top: 28px;
+  padding: 18px 20px; background: rgba(255,255,255,0.04);
+  border-left: 2px solid rgba(91,184,212,0.35); margin-top: 28px;
 }
-.contact-note p { font-size: 0.80rem; color: var(--stone); line-height: 1.65; }
+.contact-note p { font-size: 0.80rem; color: rgba(255,255,255,0.62); line-height: 1.65; }
+
+/* CONTACT FORM */
+.contact-form { display: flex; flex-direction: column; gap: 16px; }
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.form-label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: #5BB8D4; margin-bottom: 6px;
+}
+.form-input, .form-textarea {
+  width: 100%;
+  font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--white);
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16);
+  padding: 10px 12px; border-radius: 2px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.form-input::placeholder, .form-textarea::placeholder { color: rgba(255,255,255,0.32); }
+.form-input:focus, .form-textarea:focus {
+  outline: none; border-color: #5BB8D4; background: rgba(255,255,255,0.09);
+}
+.form-textarea { resize: vertical; min-height: 108px; font-family: inherit; }
+.form-submit {
+  align-self: flex-start; margin-top: 2px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  background: var(--white); color: var(--navy); border: none;
+  padding: 12px 24px; cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.form-submit:hover { background: #5BB8D4; color: var(--white); }
+.form-submit svg { transition: transform 0.2s; }
+.form-submit:hover svg { transform: translateX(3px); }
+.form-note { font-size: 0.72rem; color: rgba(255,255,255,0.38); line-height: 1.5; }
+.form-status { font-size: 0.78rem; color: #5BB8D4; display: none; }
+.form-status.visible { display: block; }
 
 /* FOOTER */
 .footer { background: var(--navy); color: rgba(255,255,255,0.55); padding: 40px 32px; }
@@ -350,6 +393,7 @@ a.inst-card:hover { background: var(--pale); cursor: pointer; }
   .overview-inner { grid-template-columns: 1fr; gap: 36px; }
   .team-grid { grid-template-columns: 1fr 1fr; }
   .contact-inner { grid-template-columns: 1fr; gap: 32px; }
+  .form-row { grid-template-columns: 1fr; gap: 16px; }
   .footer-inner { flex-direction: column; }
   .footer-links { align-items: flex-start; }
 }
@@ -630,19 +674,45 @@ a.inst-card:hover { background: var(--pale); cursor: pointer; }
           <span class="contact-value">School of Medicine, University of St Andrews, St Andrews, Fife, UK</span>
         </div>
       </div>
-    </div>
-    <div class="fade-up">
       <div class="contact-note">
         <p>SCOTTISH Network is a collaborative academic research network. Enquiries regarding individual clinical referrals or NHS services should be directed to the relevant NHS board directly.</p>
       </div>
-      <div class="contact-note" style="margin-top:10px; border-left-color:var(--border);">
-        <p style="color:var(--light);">
-          <strong style="font-weight:600; color:var(--stone); display:block; margin-bottom:4px;">Associated networks</strong>
+      <div class="contact-note" style="margin-top:10px;">
+        <p>
+          <strong style="font-weight:600; color:rgba(255,255,255,0.78); display:block; margin-bottom:4px;">Associated networks</strong>
           SCOTnet (Scottish Collaborative Orthopaedic Trainee Research Network)<br>
           Scottish Arthroplasty Project, Public Health Scotland<br>
           STRIKERS Elite Sports Group
         </p>
       </div>
+    </div>
+    <div class="fade-up">
+      <form class="contact-form" id="contact-form" novalidate>
+        <div class="form-row">
+          <div>
+            <label class="form-label" for="cf-name">Name</label>
+            <input class="form-input" type="text" id="cf-name" name="name" placeholder="Dr Jane Smith" required>
+          </div>
+          <div>
+            <label class="form-label" for="cf-email">Email</label>
+            <input class="form-input" type="email" id="cf-email" name="email" placeholder="jane.smith@nhs.scot" required>
+          </div>
+        </div>
+        <div>
+          <label class="form-label" for="cf-institution">Institution</label>
+          <input class="form-input" type="text" id="cf-institution" name="institution" placeholder="Organisation or department">
+        </div>
+        <div>
+          <label class="form-label" for="cf-message">Message</label>
+          <textarea class="form-textarea" id="cf-message" name="message" placeholder="Outline your enquiry, including any relevant study or research programme." required></textarea>
+        </div>
+        <button type="submit" class="form-submit">
+          Send Enquiry
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <p class="form-status" id="contact-form-status">Your email client should now have opened with this enquiry pre-filled. If nothing happened, please email ajh52@st-andrews.ac.uk directly.</p>
+        <p class="form-note">Submitting opens your email client with this enquiry addressed to ajh52@st-andrews.ac.uk. No data is stored or transmitted by this website.</p>
+      </form>
     </div>
   </div>
 </section>
@@ -674,6 +744,36 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.10 });
 document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+  contactForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const name = document.getElementById('cf-name').value.trim();
+    const email = document.getElementById('cf-email').value.trim();
+    const institution = document.getElementById('cf-institution').value.trim();
+    const message = document.getElementById('cf-message').value.trim();
+
+    const subject = 'SCOTTISH Network enquiry from ' + (name || 'website visitor');
+    const bodyLines = [
+      message,
+      '',
+      '---',
+      'Name: ' + name,
+      'Email: ' + email,
+      institution ? ('Institution: ' + institution) : ''
+    ].filter(Boolean);
+
+    const mailtoLink = 'mailto:ajh52@st-andrews.ac.uk'
+      + '?subject=' + encodeURIComponent(subject)
+      + '&body=' + encodeURIComponent(bodyLines.join('\n'));
+
+    window.location.href = mailtoLink;
+
+    const status = document.getElementById('contact-form-status');
+    if (status) { status.classList.add('visible'); }
+  });
+}
 </script>
 </body>
 </html>
