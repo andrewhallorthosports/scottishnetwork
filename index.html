@@ -282,6 +282,19 @@ a.inst-card:hover { background: var(--pale); cursor: pointer; }
   font-family: 'JetBrains Mono', monospace;
   font-size: 8px; color: var(--stone); margin-top: 8px; letter-spacing: 0.04em;
 }
+.collab-block { margin-top: 48px; }
+.collab-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--light); margin-bottom: 6px;
+}
+.collab-note { font-size: 0.78rem; color: var(--stone); line-height: 1.6; margin-bottom: 18px; max-width: 640px; }
+.collab-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.collab-chip {
+  background: var(--white); border: 1px solid var(--border);
+  padding: 6px 12px; font-size: 0.78rem; color: var(--navy);
+}
 
 /* CONTACT */
 .contact {
@@ -602,74 +615,158 @@ a.inst-card:hover { background: var(--pale); cursor: pointer; }
     <div class="team-grid">
 
       <div class="team-card fade-up">
-        <div class="team-name">A. J. Hall</div>
+        <div class="team-name">Dr Andrew J Hall</div>
         <div class="team-ci">Chief Investigator &amp; Co-Chair</div>
-        <div class="team-role">School of Medicine, University of St Andrews; Golden Jubilee University National Hospital; National Treatment Centre - Fife Orthopaedics</div>
+        <div class="team-role">School of Medicine, University of St Andrews; Golden Jubilee University National Hospital; National Treatment Centre - Fife Orthopaedics, Victoria Hospital, Kirkcaldy</div>
         <div class="team-inst">SNAP Femur &middot; GLP-1 OA &middot; RAS Perceptions</div>
       </div>
 
       <div class="team-card fade-up">
-        <div class="team-name">C. Gee</div>
+        <div class="team-name">Prof Christopher W Gee</div>
         <div class="team-ci">Co-Chair</div>
-        <div class="team-role">School of Medicine, University of St Andrews; Golden Jubilee University National Hospital; University of Strathclyde</div>
+        <div class="team-role">Golden Jubilee University National Hospital; University of Strathclyde; Centre for Sustainable Delivery</div>
+        <div class="team-inst">GLP-1 OA &middot; RAS Perceptions</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Dr Nick D Clement</div>
+        <div class="team-role">School of Medicine, University of St Andrews; Edinburgh Orthopaedics, Royal Infirmary of Edinburgh; Scottish Hip Fracture Audit, Public Health Scotland</div>
         <div class="team-inst">SNAP Femur &middot; GLP-1 OA &middot; RAS Perceptions</div>
       </div>
 
       <div class="team-card fade-up">
-        <div class="team-name">M. J. Kennedy</div>
-        <div class="team-role">School of Medicine, University of St Andrews</div>
-        <div class="team-inst">SNAP Femur</div>
-      </div>
-
-      <div class="team-card fade-up">
-        <div class="team-name">N. D. Clement</div>
-        <div class="team-role">Edinburgh Orthopaedics, Royal Infirmary of Edinburgh; School of Medicine, University of St Andrews</div>
+        <div class="team-name">Dr Phil J Walmsley</div>
+        <div class="team-role">School of Medicine, University of St Andrews; Scottish Arthroplasty Project, Public Health Scotland; National Treatment Centre - Fife Orthopaedics, Victoria Hospital, Kirkcaldy</div>
         <div class="team-inst">SNAP Femur &middot; GLP-1 OA</div>
       </div>
 
       <div class="team-card fade-up">
-        <div class="team-name">C. McCann</div>
+        <div class="team-name">Prof Jon V Clarke</div>
+        <div class="team-role">Golden Jubilee University National Hospital; University of Strathclyde; Scottish Arthroplasty Project, Public Health Scotland</div>
+        <div class="team-inst">SNAP Femur &middot; RAS Perceptions</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Mr Conor McCann</div>
         <div class="team-role">School of Medicine, University of St Andrews; Golden Jubilee University National Hospital</div>
         <div class="team-inst">GLP-1 OA</div>
       </div>
 
       <div class="team-card fade-up">
-        <div class="team-name">P. J. Walmsley</div>
-        <div class="team-role">School of Medicine, University of St Andrews; National Treatment Centre - Fife Orthopaedics; Scottish Arthroplasty Project, Public Health Scotland</div>
-        <div class="team-inst">SNAP Femur &middot; GLP-1 OA</div>
-      </div>
-
-      <div class="team-card fade-up">
-        <div class="team-name">J. V. Clarke</div>
-        <div class="team-role">Golden Jubilee University National Hospital</div>
-        <div class="team-inst">SNAP Femur</div>
-      </div>
-
-      <div class="team-card fade-up">
-        <div class="team-name">L. Farrow</div>
-        <div class="team-role">Aberdeen Royal Infirmary; University of Aberdeen</div>
-        <div class="team-inst">SNAP Femur</div>
-      </div>
-
-      <div class="team-card fade-up">
-        <div class="team-name">A. D. Duckworth</div>
-        <div class="team-role">Edinburgh Orthopaedics, Royal Infirmary of Edinburgh; University of Edinburgh</div>
-        <div class="team-inst">SNAP Femur</div>
-      </div>
-
-      <div class="team-card fade-up">
-        <div class="team-name">S. Morrison</div>
+        <div class="team-name">Mr Scott R Morrison</div>
         <div class="team-role">School of Medicine, University of St Andrews; Golden Jubilee University National Hospital</div>
         <div class="team-inst">GLP-1 OA &middot; RAS Perceptions</div>
       </div>
 
       <div class="team-card fade-up">
-        <div class="team-name">S. Chopra</div>
+        <div class="team-name">Dr Swati Chopra</div>
         <div class="team-role">Golden Jubilee University National Hospital</div>
-        <div class="team-inst">RAS Perceptions</div>
+        <div class="team-inst">GLP-1 OA &middot; RAS Perceptions</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Mr Calum Blacklock</div>
+        <div class="team-role">Edinburgh Orthopaedics, Royal Infirmary of Edinburgh</div>
+        <div class="team-inst">SNAP Femur</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Prof Andrew D Duckworth</div>
+        <div class="team-role">Edinburgh Orthopaedics, Royal Infirmary of Edinburgh; Centre for Population Health Sciences, Usher Institute, University of Edinburgh</div>
+        <div class="team-inst">SNAP Femur</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Dr Luke Farrow</div>
+        <div class="team-role">Aberdeen Royal Infirmary; University of Aberdeen</div>
+        <div class="team-inst">SNAP Femur</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Mr Thomas Harding</div>
+        <div class="team-role">Ninewells Hospital, Dundee</div>
+        <div class="team-inst">SNAP Femur</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Dr Ronan Kearney</div>
+        <div class="team-role">Blackrock Clinic, Dublin</div>
+        <div class="team-inst">GLP-1 OA</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Mr Ian W Kennedy</div>
+        <div class="team-role">Queen Elizabeth University Hospital, Glasgow; School of Medicine, University of Glasgow</div>
+        <div class="team-inst">SNAP Femur</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Mr Matthew J Kennedy</div>
+        <div class="team-role">Golden Jubilee University National Hospital; School of Medicine, University of St Andrews</div>
+        <div class="team-inst">SNAP Femur</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Prof Alasdair M J MacLullich</div>
+        <div class="team-role">Edinburgh Orthopaedics, Royal Infirmary of Edinburgh; Scottish Hip Fracture Audit, Public Health Scotland</div>
+        <div class="team-inst">SNAP Femur</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Prof Sharon Madigan</div>
+        <div class="team-role">University of Limerick; Sport Ireland Institute, Dublin</div>
+        <div class="team-inst">GLP-1 OA</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Prof Andrew Murray</div>
+        <div class="team-role">Edinburgh Orthopaedics Sports Medicine Research</div>
+        <div class="team-inst">GLP-1 OA</div>
+      </div>
+
+      <div class="team-card fade-up">
+        <div class="team-name">Dr Rose S Penfold</div>
+        <div class="team-role">Scottish Hip Fracture Audit, Public Health Scotland; Centre for Population Health Sciences, Usher Institute, University of Edinburgh</div>
+        <div class="team-inst">SNAP Femur</div>
       </div>
 
     </div>
+
+    <div class="collab-block fade-up">
+      <p class="collab-label">SCOTnet SNAP Femur Group</p>
+      <p class="collab-note">Collaborating members credited under the SCOTnet SNAP Femur Group authorship on the SNAP Femur study (Bone &amp; Joint J 2026;108-B(5):707-715).</p>
+      <div class="collab-grid">
+          <span class="collab-chip">Karen Adam</span>
+          <span class="collab-chip">Roberto Alho</span>
+          <span class="collab-chip">Matthew Arnold</span>
+          <span class="collab-chip">Justine Burt</span>
+          <span class="collab-chip">Isabelle Cochrane</span>
+          <span class="collab-chip">India Cox</span>
+          <span class="collab-chip">Joseph Duncumb</span>
+          <span class="collab-chip">Anthony Gibson</span>
+          <span class="collab-chip">Hamzah Hanif</span>
+          <span class="collab-chip">Euan Harris</span>
+          <span class="collab-chip">Aur&eacute;lie G. C. Hay-David</span>
+          <span class="collab-chip">Alan Howieson</span>
+          <span class="collab-chip">Jun Leow</span>
+          <span class="collab-chip">Quintin Liao</span>
+          <span class="collab-chip">Sam MacKenzie</span>
+          <span class="collab-chip">Alistair Macey</span>
+          <span class="collab-chip">Fahd Mahmood</span>
+          <span class="collab-chip">Kirsty Milne</span>
+          <span class="collab-chip">David Munn</span>
+          <span class="collab-chip">Graeme Nicol</span>
+          <span class="collab-chip">Mannix O&rsquo;Boyle</span>
+          <span class="collab-chip">Roshan Raghavan</span>
+          <span class="collab-chip">Lauren Ross</span>
+          <span class="collab-chip">Paul Ryan</span>
+          <span class="collab-chip">Mariam Sattar</span>
+          <span class="collab-chip">Rob Sinnerton</span>
+          <span class="collab-chip">Henrietta Stockdale</span>
+          <span class="collab-chip">Janice Wong</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
