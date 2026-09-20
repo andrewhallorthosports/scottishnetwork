@@ -135,6 +135,69 @@ body {
 }
 .stat-l { font-size: 0.70rem; color: rgba(255,255,255,0.48); margin-top: 2px; letter-spacing: 0.04em; }
 
+
+/* LOGO CLUSTER SECTION */
+.logo-cluster-section {
+  background: linear-gradient(160deg, var(--navy) 0%, #1C242C 55%, #3D5870 100%);
+  color: var(--white);
+  padding: 48px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.logo-cluster-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 65% 35%, rgba(114,175,218,0.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+.logo-cluster-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+}
+.logo-cluster-wait-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-cluster-wait-data img,
+.logo-cluster-wait-data svg {
+  height: 120px;
+  width: auto;
+  max-width: 300px;
+}
+.logo-cluster-affiliated {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.logo-cluster-affiliated img,
+.logo-cluster-affiliated svg {
+  height: 60px;
+  width: auto;
+  max-width: 150px;
+  opacity: 0.9;
+}
+.logo-cluster-affiliated img:hover,
+.logo-cluster-affiliated svg:hover {
+  opacity: 1;
+}
+@media (max-width: 600px) {
+  .logo-cluster-section { padding: 32px 20px; }
+  .logo-cluster-wait-data img,
+  .logo-cluster-wait-data svg { height: 80px; }
+  .logo-cluster-affiliated img,
+  .logo-cluster-affiliated svg { height: 48px; }
+  .logo-cluster-affiliated { gap: 16px; }
+}
 /* JOURNAL DETAIL SECTION */
 .journal-section { background: var(--white); padding: 56px 32px; border-bottom: 1px solid var(--border); }
 .journal-inner {
@@ -364,6 +427,22 @@ body {
     </div>
   </div>
 </div>
+
+
+<section class="logo-cluster-section">
+  <div class="logo-cluster-inner">
+    <div class="logo-cluster-wait-data">
+      <!-- WAIT-DATA Logo -->
+      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==" alt="WAIT-DATA Study Logo" />
+    </div>
+    <div class="logo-cluster-affiliated">
+      <!-- Affiliated Organizations Logos -->
+      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iNjAiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt="Partner Organization Logo 1" />
+      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iNjAiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt="Partner Organization Logo 2" />
+      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iNjAiIGZpbGw9Im5vbmUiLz48L3N2Zz4=" alt="Partner Organization Logo 3" />
+    </div>
+  </div>
+</section>
 
 <section class="hero">
   <div class="hero-inner">
