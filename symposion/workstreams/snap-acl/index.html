@@ -1,0 +1,2117 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Symposion: service-level standards in ACL care</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --parchment:#F2EDE2; --bone:#E7DFCD; --ivory:#FBF8F1; --ink:#26231D; --navy:#1E2D4A;
+  --teal:#2B7A78; --teal-wash:#E3EFEC; --umber:#6E4A2E; --muted:#6A6355; --rule:#D8CFBC;
+  --alert:#8A2F22; --alert-wash:#F6E6E1;
+  --display:'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --body:'Spectral', Georgia, 'Times New Roman', serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--parchment);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.62;font-feature-settings:"onum" 1,"kern" 1}
+a{color:var(--navy);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:var(--teal)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:2px}
+button{font-family:var(--body);font-size:15px;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+.charcount{font-size:.78rem;color:var(--muted,#6a6355);text-align:right;margin-top:2px}.charcount.full{color:#8a2d1c;font-weight:600}
+/* page view: the Word pages as laid out, with a selectable text layer and paragraph notes in the margin */
+.shell:has(.pv-doc){max-width:1520px;grid-template-columns:230px minmax(0,1fr) 260px;gap:32px}
+body:has(.pv-doc) .top-in,body:has(.pv-doc) .mainnav-in,body:has(.pv-doc) .platform-in,body:has(.pv-doc) .foot-in{max-width:1520px}
+@media (max-width:1100px){.shell:has(.pv-doc){grid-template-columns:220px minmax(0,1fr)}}
+@media (max-width:780px){.shell:has(.pv-doc){grid-template-columns:minmax(0,1fr)}}
+.read:has(.pv-doc),.read:has(.pv-preview){max-width:none}
+.pv-switch{display:flex;gap:0;justify-content:flex-end;margin:0 0 12px}
+.pv-switch button{background:none;border:1px solid var(--rule);padding:3px 12px;font-size:13.5px;color:var(--muted)}
+.pv-switch button+button{border-left:0}
+.pv-switch button[aria-pressed="true"]{border-color:var(--navy);color:var(--navy);background:var(--bone)}
+@media (max-width:759px){.pv-switch,.pv-prevbtn{display:none!important}}
+.pv-doc,.pv-preview{display:grid;gap:18px;padding:18px;background:#E9E6DF;border:1px solid var(--rule)}
+.pv-preview{grid-column:1/-1;margin-top:4px}
+.pv-page{position:relative;background:#fff;box-shadow:0 1px 3px rgba(20,30,50,.18);container-type:inline-size;overflow:hidden}
+.pv-page img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none}
+.pv-page .pv-wait{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px}
+.pv-dim{position:absolute;left:0;right:0;background:rgba(233,230,223,.78);pointer-events:none}
+.pv-text{position:absolute;inset:0;line-height:1;font-family:"Times New Roman",Times,"Liberation Serif",serif}
+.pv-text span{position:absolute;white-space:pre;color:transparent;transform-origin:0 0;cursor:text}
+.pv-text span::selection{background:rgba(31,111,120,.28);color:transparent}
+.pv-para{position:absolute;pointer-events:none;border-left:2px solid transparent;transition:background .12s}
+.pv-para.hot{background:rgba(31,111,120,.06);border-left-color:var(--teal)}
+.pv-note{position:absolute;right:.6%;transform:translateY(-1px);background:#fff;border:1px solid var(--navy);color:var(--navy);font-size:11.5px;line-height:1.3;padding:1px 6px;border-radius:2px;opacity:0;z-index:2}
+.pv-note.on,.pv-note:focus-visible{opacity:1}
+.pv-note.noted{opacity:.85;border-color:var(--teal);color:var(--teal)}
+/* manuscript review: numbered paragraphs, open queries and task cards */
+.ms .sub{font-family:var(--display);font-size:21px;color:var(--navy);margin:26px 0 8px}
+.para{display:grid;grid-template-columns:34px 1fr auto;gap:0 10px;align-items:start;padding:6px 0;border-top:1px solid transparent}
+.para:hover{border-top-color:var(--rule)}
+.para .pnum{font-family:var(--display);font-weight:600;color:var(--umber);font-size:15px;font-variant-numeric:lining-nums;text-align:right;padding-top:3px}
+.para .ptext p{margin:0}
+.para .ptext{min-width:0}
+.para.list .ptext{padding-left:18px}
+.para .pnote{background:none;border:1px solid var(--rule);color:var(--muted);font-size:12.5px;padding:2px 8px;border-radius:2px;opacity:.55}
+.para:hover .pnote,.para .pnote:focus-visible{opacity:1;color:var(--navy);border-color:var(--navy)}
+.para.noted .pnum::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--teal);margin-left:4px;vertical-align:middle}
+mark.query{background:#F4E3B5;color:var(--ink);padding:0 3px}
+.tbl{overflow-x:auto}.tbl table{border-collapse:collapse;font-size:13.5px;line-height:1.4;width:100%}
+.tbl th,.tbl td{border-bottom:1px solid var(--rule);padding:5px 6px;vertical-align:top;text-align:left}
+.tbl th{border-bottom:2px solid var(--navy)}
+.para img{max-width:100%;height:auto;background:#fff;border:1px solid var(--rule)}
+.sheet{background:#FFFEFC;border:1px solid #E2DBCB;box-shadow:0 1px 3px rgba(40,30,10,.10);padding:22px 28px 18px;margin-top:6px}
+.sheet>.sub:first-child{margin-top:0}
+.sheet .para .ptext,.sheet .para .ptext p{text-align:justify;text-justify:inter-word;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.sheet .para .ptext table,.sheet .para .ptext th,.sheet .para .ptext td{text-align:left;hyphens:manual}
+@media (max-width:780px){
+  body .shell{padding:12px 6px 48px;gap:16px}
+  body .read{max-width:none}
+  .sheet{padding:16px 13px 12px;border-left-color:transparent;border-right-color:transparent;box-shadow:0 1px 2px rgba(40,30,10,.12)}
+  .sheet .para{grid-template-columns:18px minmax(0,1fr);grid-template-areas:"n t" ". b";gap:0 6px;padding:5px 0}
+  .sheet .para .pnum{grid-area:n;font-size:11.5px;padding-top:5px;color:#9A8466}
+  .sheet .para .ptext{grid-area:t;font-size:17px;line-height:1.62}
+  .sheet .para .pnote{grid-area:b;justify-self:end;opacity:1;margin:2px 0 4px;padding:1px 8px;font-size:12px}
+  .sheet .para.list .ptext{padding-left:12px}
+}
+.task{background:var(--ivory);border:1px solid var(--rule);border-left:3px solid var(--rule);padding:14px 16px;margin:0 0 14px}
+.task.answered{border-left-color:var(--teal)}
+.task ul.grp{margin:4px 0 12px;padding-left:20px;font-size:15px;line-height:1.45}.task ul.grp li{margin:2px 0}
+.task dl.codemeta{display:grid;grid-template-columns:max-content 1fr;gap:2px 12px;margin:2px 0 12px;font-size:15px}.task dl.codemeta dt{font-weight:600}.task dl.codemeta dd{margin:0;overflow-wrap:anywhere}
+.task h4{font-family:var(--display);font-size:19px;color:var(--navy);margin:0 0 2px;line-height:1.2}
+.task .tk{font-size:13px;color:var(--umber);margin:0 0 6px}
+.task .tstat{float:right;font-size:12.5px;color:var(--muted)}
+.task.answered .tstat{color:var(--teal)}
+.task dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;font-size:14.5px;margin:8px 0 10px}
+.task dt{color:var(--muted)}.task dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.task .ctx{font-size:14.5px;color:var(--muted);margin:0 0 8px}
+.task fieldset{border:0;padding:0;margin:8px 0}
+.task legend{font-size:14.5px;margin-bottom:4px}
+.task .opt{display:flex;gap:8px;align-items:flex-start;font-size:14.5px;margin:3px 0}
+.task .opt input{margin-top:5px}
+.task textarea,.ledger textarea{width:100%;min-height:70px;font-family:var(--body);font-size:15px;padding:8px 10px;border:1px solid var(--rule);background:#fff;border-radius:2px}
+.task .field{margin:8px 0}
+.task .field input{font-size:15px;padding:7px 9px}
+.taskfilter{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.taskfilter button{background:none;border:1px solid var(--rule);padding:3px 10px;font-size:13.5px;border-radius:2px;color:var(--muted)}
+.taskfilter button[aria-pressed="true"]{border-color:var(--navy);color:var(--navy);background:var(--bone)}
+.overview td.n,.overview th.n{text-align:right;font-variant-numeric:lining-nums}
+.exportbox{background:var(--teal-wash);border:1px solid var(--teal);padding:14px 16px;margin:18px 0}
+.exportbox p{margin:0 0 10px}
+
+/* Gate: the project leads; Symposion is credited beneath as the host */
+.gate{min-height:100vh;display:grid;place-items:center;padding:28px 16px;background:var(--parchment)}
+.gate-wrap{width:min(560px,100%)}
+.gate-card{background:var(--ivory);border:1px solid var(--rule);border-top:3px solid var(--navy);padding:34px 36px 28px}
+.gate-card .gate-partners{gap:28px;padding:0 0 22px;border-bottom:1px solid var(--rule);margin:0 0 22px}
+.gate-card .gate-partners img{height:64px}
+.gate-card .gate-partners .lead,.gate-card .gate-partners .collab-label{flex-basis:auto}
+.gate-card .gate-partners .collab-label{flex-basis:100%;margin:2px 0 -12px}
+.gate-card .gate-partners .collab img{height:51px}
+.gate-kicker{font-family:var(--display);font-size:17px;color:var(--umber);margin:0 0 4px!important}
+.gate-card h1{font-family:var(--display);font-weight:600;font-size:38px;line-height:1.08;color:var(--navy);margin:0 0 14px}
+.gate-card p{color:var(--muted);font-size:15.5px;margin:0 0 22px}
+.field label{display:block;font-size:14.5px;margin-bottom:6px;color:var(--ink)}
+.field input{width:100%;font-family:var(--body);font-size:17px;padding:11px 12px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:2px}
+.field input:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-wash)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--navy);background:var(--navy);color:var(--ivory);padding:10px 18px;border-radius:2px;font-weight:500}
+.btn:hover{background:#16223a}
+.btn.quiet{background:transparent;color:var(--navy)}
+.btn.quiet:hover{background:var(--bone)}
+.btn.live{background:var(--teal);border-color:var(--teal)}
+.btn.live:hover{background:#226563}
+.gate-card .btn{margin-top:16px;width:100%;justify-content:center;padding:12px}
+.err{margin-top:14px;background:var(--alert-wash);color:var(--alert);border-left:3px solid var(--alert);padding:10px 12px;font-size:14.5px}
+.gate-card .gate-foot{margin:20px 0 0;font-size:13px;color:var(--muted)}
+.hosted{margin:18px 4px 0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.hosted p{margin:8px 0 0}
+.hosted a,.platform a,.foot-in a{color:inherit}
+.hosted-brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hosted-label{font-size:12px;letter-spacing:.04em;color:var(--muted)}
+.wordmark{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.38em;color:var(--muted);margin:0}
+.sa-logo{height:26px;width:auto;display:block;mix-blend-mode:multiply;opacity:.9}
+
+/* App frame: a quiet platform strip, then the project masthead and the navigation in research order */
+.platform{background:var(--parchment);border-bottom:1px solid var(--rule)}
+.platform-in{max-width:1240px;margin:0 auto;padding:5px 24px;display:flex;align-items:center;justify-content:space-between;gap:6px 20px;flex-wrap:wrap}
+.platform .status{display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap}
+.top{background:var(--ivory);border-bottom:1px solid var(--rule)}
+.top-in{max-width:1240px;margin:0 auto;padding:18px 24px 14px;display:flex;align-items:center;gap:14px 30px;flex-wrap:wrap}
+.tb-text{min-width:0;flex:1 1 320px}
+.tb-kicker{font-family:var(--display);font-size:16px;color:var(--umber);margin:0}
+.tb-title{font-family:var(--display);font-size:30px;line-height:1.12;color:var(--navy);margin:0;font-weight:600}
+.partners{list-style:none;display:flex;align-items:center;gap:24px;margin:0;padding:0;flex-wrap:wrap}
+.partners li{display:flex}
+.partners img{height:52px;width:auto;display:block}
+.partners .collab img{height:42px}
+.partners .collab-label{align-items:center;font-size:13.5px;font-style:italic;color:var(--muted);white-space:nowrap}
+.top-in .partners{padding-right:30px;border-right:1px solid var(--rule)}
+.mainnav{border-top:1px solid var(--rule)}
+.mainnav-in{position:relative}
+.mainnav-in{max-width:1240px;margin:0 auto;padding:0 24px;display:flex;align-items:stretch;gap:4px 10px;flex-wrap:wrap}
+.mainnav button{background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);font-size:14.5px;padding:10px 2px 9px;line-height:1.2}
+.mainnav button:hover{color:var(--navy)}
+.mainnav button[aria-current="page"],.mainnav button[aria-current="step"]{color:var(--navy);border-bottom-color:var(--umber)}
+.nav-map{font-weight:500}
+.phases{list-style:none;margin:0;padding:0 0 0 10px;display:flex;gap:2px 6px;flex-wrap:wrap;border-left:1px solid var(--rule)}
+.phases li{position:relative}
+.phases button{display:flex;align-items:center;gap:7px}
+.phases .pn{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1px solid var(--umber);color:var(--umber);font-family:var(--display);font-weight:600;font-size:13.5px;font-variant-numeric:lining-nums}
+.phases li.done .pn{background:var(--navy);border-color:var(--navy);color:var(--ivory)}
+.phases .pc{font-size:12.5px;color:var(--muted)}
+.ref{margin-left:auto;display:flex;gap:2px 8px;flex-wrap:wrap;padding-left:10px;border-left:1px solid var(--rule)}
+@media (max-width:980px){.ref{margin-left:0;border-left:0;padding-left:0}.phases{border-left:0;padding-left:0}}
+@media (max-width:780px){
+  .partners img{height:38px}.partners{gap:16px}.partners .collab img{height:30px}
+  .top-in{padding:14px 16px 12px}.top-in .partners{border-right:0;padding-right:0}
+  .tb-title{font-size:23px}
+  .platform-in,.mainnav-in{padding-left:16px;padding-right:16px}
+  .mainnav-in{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+  .phases,.ref{flex-wrap:nowrap}
+  .mainnav button{white-space:nowrap}
+  .gate-card{padding:26px 22px 22px}.gate-card .gate-partners img{height:46px}.gate-card .gate-partners .collab img{height:37px}.gate-card .gate-partners{gap:18px}.gate-card h1{font-size:30px}
+}
+.dlg-check{display:flex;align-items:center;gap:8px;font-size:14.5px;color:var(--muted);margin-top:12px}
+.dlg-check input{width:auto;margin:0}
+.ro .ledger input:disabled,.ro .ledger button:disabled{opacity:.5;cursor:not-allowed;background:#ECE6D9;color:var(--muted);border-color:var(--rule)}
+.ro .ledger{background:#F4F0E6}
+.sync{font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.sync .dot{width:8px;height:8px;border-radius:50%;background:var(--rule)}
+.sync.ok .dot{background:var(--teal)}
+.sync.pending .dot{background:var(--umber)}
+.sync.warn{color:#8a2d1c;white-space:normal}
+.sync.warn .dot{background:#b3412a}
+
+.shell{max-width:1240px;margin:0 auto;padding:28px 24px 64px;display:grid;grid-template-columns:270px minmax(0,1fr) 290px;gap:40px;align-items:start}
+.shell.wide{grid-template-columns:minmax(0,1fr)}
+@media (max-width:1100px){.shell{grid-template-columns:240px minmax(0,1fr)}.ledger{grid-column:2}}
+@media (max-width:780px){.shell{grid-template-columns:minmax(0,1fr);gap:24px}.ledger{grid-column:auto}.rail{position:static!important}}
+
+/* Route switch and rail */
+.rail{position:sticky;top:20px}
+.route{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);background:var(--ivory);margin-bottom:22px}
+.route button{background:none;border:0;padding:10px 8px;font-size:14.5px;color:var(--muted);line-height:1.25}
+.route button[aria-pressed="true"]{background:var(--navy);color:var(--ivory)}
+.steps{list-style:none;margin:0;padding:0;position:relative}
+.steps::before{content:"";position:absolute;left:15px;top:8px;bottom:8px;width:1px;background:var(--umber);opacity:.55}
+.steps li{position:relative}
+.steps button{display:grid;grid-template-columns:31px 1fr;gap:12px;align-items:baseline;width:100%;text-align:left;background:none;border:0;padding:7px 0;color:var(--ink);font-size:15.5px;line-height:1.35}
+.steps .node{font-variant-numeric:lining-nums;width:31px;height:31px;border-radius:50%;background:var(--parchment);border:1px solid var(--umber);display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:16px;color:var(--umber);position:relative;top:7px}
+.steps li.done .node{background:var(--navy);border-color:var(--navy);color:var(--ivory)}
+.steps li.current .node{box-shadow:0 0 0 3px var(--parchment),0 0 0 4px var(--teal)}
+.steps li.current button{color:var(--navy);font-weight:500}
+.steps button:hover .t{text-decoration:underline;text-underline-offset:3px}
+.tally{margin-top:20px;font-size:14px;color:var(--muted)}
+.steps-toggle{display:none}
+@media (max-width:780px){
+  .steps-toggle{display:flex;justify-content:space-between;width:100%;background:var(--ivory);border:1px solid var(--rule);padding:10px 14px;color:var(--navy);font-size:15px;border-radius:2px}
+  .rail:not(.open) .steps,.rail:not(.open) .tally{display:none}
+  .rail.open .steps{margin-top:14px}
+}
+.tally strong{color:var(--ink);font-weight:500}
+
+/* Reading column */
+.read{max-width:68ch}
+.read .kicker{font-family:var(--display);font-size:19px;color:var(--umber);margin:0 0 2px}
+.read h2{font-family:var(--display);font-weight:600;font-size:40px;line-height:1.08;color:var(--navy);margin:0 0 20px;letter-spacing:-.005em}
+.read h3{font-family:var(--display);font-weight:600;font-size:25px;color:var(--navy);margin:34px 0 8px}
+.read p{margin:0 0 16px}
+.read strong{font-weight:600;color:var(--navy)}
+.read code, pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:36px;padding-top:20px;border-top:1px solid var(--rule)}
+.read .log h2{font-size:27px;margin:36px 0 10px}
+.read .log ul{padding-left:20px}
+.read .log li{margin-bottom:8px}
+.intro{border-left:3px solid var(--umber);padding:2px 0 2px 18px;color:var(--muted);margin:0 0 28px;font-style:italic}
+
+/* Ledger */
+.ledger{background:var(--ivory);border:1px solid var(--rule);padding:22px 20px;position:sticky;top:20px}
+.ledger h4{font-family:var(--display);font-weight:600;font-size:21px;color:var(--navy);margin:0 0 6px}
+.ledger .hint{font-size:14px;color:var(--muted);margin:0 0 16px}
+.ledger .field{margin-bottom:14px}
+.ledger .field label{font-size:14px}
+.ledger .field input{font-size:16px;padding:8px 10px}
+.ledger .actions{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.ledger .stamp{font-size:13.5px;color:var(--muted);margin-top:12px}
+.ledger.done{border-top:3px solid var(--navy)}
+
+/* Search strings */
+.db{background:var(--ivory);border:1px solid var(--rule);margin:0 0 22px}
+.db header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 20px 10px}
+.db header > div{flex:1 1 auto;min-width:0}
+.db header .copy{flex:0 0 auto;margin-top:4px}
+.db h3{margin:0;font-family:var(--display);font-size:24px;color:var(--navy);font-weight:600}
+.db .plat{color:var(--muted);font-size:14.5px}
+.db .note{padding:0 20px;color:var(--muted);font-size:14.5px;margin:0 0 12px}
+.db .note.untested{color:var(--umber)}
+.db pre{margin:0;padding:14px 20px;background:#F7F3EA;border-top:1px solid var(--rule);white-space:pre-wrap;word-break:break-word;max-height:420px;overflow:auto;line-height:1.5}
+.db ol{margin:0;padding:12px 20px 14px 54px;background:#F7F3EA;border-top:1px solid var(--rule);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;max-height:420px;overflow:auto}
+.db ol li{padding:1px 0}
+.copy{background:none;border:1px solid var(--teal);color:var(--teal);padding:5px 12px;border-radius:2px;font-size:14px}
+.copy:hover{background:var(--teal-wash)}
+
+/* Pack */
+.pack{list-style:none;padding:0;margin:0;border-top:1px solid var(--rule)}
+.overview-files{margin:22px 0 6px}
+.pack li{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:18px 0;border-bottom:1px solid var(--rule)}
+.pack .name{font-family:var(--display);font-size:22px;color:var(--navy);font-weight:600;line-height:1.2}
+.pack .desc{color:var(--muted);font-size:15px;margin-top:4px}
+.pack .meta{font-size:13px;color:var(--muted);margin-top:6px}
+.dl-word{display:inline-flex;align-items:center;gap:9px;background:none;border:0;padding:10px 2px;margin:0;color:#0B57D0;font-family:var(--body);font-size:16.5px;font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer;text-align:left}
+.dl-word:hover{color:#0842A0}
+.dl-word:disabled{opacity:.65;cursor:wait}
+.dl-word .wordico{flex:none;display:block}
+.pack .meta{overflow-wrap:anywhere}
+@media (max-width:560px){.pack li{grid-template-columns:1fr}}
+
+/* Tables from the protocol */
+table{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0 22px;background:var(--ivory)}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-top:1px solid var(--rule)}
+thead th{border-top:2px solid var(--navy);border-bottom:1px solid var(--navy);color:var(--navy);font-weight:600}
+tbody tr:last-child td{border-bottom:2px solid var(--navy)}
+
+/* Footer */
+footer{border-top:1px solid var(--rule);background:var(--ivory)}
+.foot-in{max-width:1240px;margin:0 auto;padding:22px 24px 28px;display:grid;grid-template-columns:1fr auto;gap:24px;font-size:13.5px;color:var(--muted)}
+.foot-in blockquote{margin:0;font-family:var(--display);font-size:18px;font-style:italic;color:var(--umber)}
+.foot-in blockquote cite{display:block;font-style:normal;font-family:var(--body);font-size:13px;color:var(--muted);margin-top:4px}
+@media (max-width:780px){.foot-in{grid-template-columns:1fr}}
+
+dialog{border:1px solid var(--rule);border-top:3px solid var(--umber);background:var(--ivory);color:var(--ink);padding:28px;width:min(480px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(30,45,74,.35)}
+dialog h3{font-family:var(--display);font-size:26px;color:var(--navy);margin:0 0 8px}
+.roles{display:grid;gap:8px;margin:16px 0 4px}
+.roles button{display:flex;flex-direction:column;gap:2px;text-align:left;background:#fff;border:1px solid var(--rule);padding:11px 14px;border-radius:2px;color:var(--ink)}
+.roles button:hover{border-color:var(--teal)}
+.roles .rt{font-weight:500;color:var(--navy);line-height:1.3}
+.roles .rn{font-size:14.5px;color:var(--muted)}
+.roles button.locked{background:var(--bone)}
+.roles .lock{display:inline-block;vertical-align:-2px;margin-right:6px}
+.dlg-field{margin-top:16px}
+.dlg-field label{display:block;font-size:14.5px;margin-bottom:6px}
+.dlg-field input,.dlg-field select{width:100%;font-family:var(--body);font-size:17px;padding:10px 12px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:2px}
+.dlg-field input:focus,.dlg-field select:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-wash)}
+.dlg-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.dlg-note{font-size:15px;color:var(--muted);margin:6px 0 0}
+dialog .err{margin-top:14px}
+.who{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.who b{color:var(--navy);font-weight:500}
+.who button,.linkish{background:none;border:0;color:var(--teal);text-decoration:underline;text-underline-offset:3px;padding:0;font-size:14px}
+.read .hint{font-size:14.5px;color:var(--muted)}
+.team .scroll{overflow-x:auto;margin:8px 0 22px}
+.team .scroll table{margin:0;min-width:520px}
+.team td .vals{font-size:13px;color:var(--muted);margin-top:2px}
+.team td.open{color:var(--muted)}
+.team td.complete{color:var(--navy);font-weight:500}
+.team .acts{white-space:nowrap}
+.team .acts button{margin-right:10px}
+.team .sub{font-size:13.5px;color:var(--muted)}
+.read.wide-read{max-width:none}
+
+/* Route map */
+.map{max-width:940px}
+.map h2{margin-bottom:10px}
+.map .lede{font-size:18px;color:var(--ink);max-width:66ch}
+.map .fulltitle{font-family:var(--display);font-size:21px;line-height:1.3;color:var(--navy);margin:0 0 18px;max-width:60ch}
+.yourpart{background:var(--teal-wash);border-left:3px solid var(--teal);padding:14px 18px;margin:22px 0 28px;max-width:72ch}
+.yourpart h3{margin:0 0 4px!important;font-size:20px!important}
+.yourpart p{margin:0}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:0 0 34px;padding:0;list-style:none;counter-reset:how}
+.howto li{background:var(--ivory);border:1px solid var(--rule);padding:14px 16px;font-size:15px;counter-increment:how}
+.howto li::before{content:counter(how);display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--navy);color:var(--ivory);font-family:var(--display);font-weight:600;font-size:14px;margin-bottom:6px;font-variant-numeric:lining-nums}
+.howto b{display:block;color:var(--navy);font-weight:600;margin-bottom:2px}
+.routepick{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:0 0 22px;font-size:15px;color:var(--muted)}
+.routepick .route{margin:0;min-width:300px}
+.journey{list-style:none;margin:0 0 36px;padding:0;position:relative}
+.journey::before{content:"";position:absolute;left:21px;top:20px;bottom:20px;width:1px;background:var(--umber);opacity:.5}
+.journey > li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:18px;padding:0 0 26px;position:relative}
+.journey .jn{width:44px;height:44px;border-radius:50%;background:var(--parchment);border:1px solid var(--umber);display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:21px;color:var(--umber);font-variant-numeric:lining-nums;position:relative}
+.journey li.done .jn{background:var(--navy);border-color:var(--navy);color:var(--ivory)}
+.journey .card{background:var(--ivory);border:1px solid var(--rule);padding:16px 20px 12px}
+.journey h3{margin:0 0 2px!important;font-size:25px!important}
+.journey .jd{color:var(--muted);margin:0 0 10px;font-size:15.5px}
+.journey .jsteps{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.journey .jsteps li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:9px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.journey .jsteps li:last-child{border-bottom:0}
+.journey .jsteps a{font-weight:500}
+.journey .jsteps .jw{grid-column:1/-1;font-size:13.5px;color:var(--muted)}
+.journey .jsteps .js{font-size:13px;color:var(--muted);white-space:nowrap}
+.journey .jsteps li.done .js{color:var(--navy);font-weight:500}
+.journey .mine{display:inline-block;font-size:12px;color:var(--teal);border:1px solid var(--teal);border-radius:2px;padding:0 6px;margin-left:8px;vertical-align:1px}
+.teamtable td:first-child{white-space:nowrap;color:var(--navy);font-weight:500}
+@media (max-width:640px){.teamtable thead{display:none}.teamtable,.teamtable tbody,.teamtable tr,.teamtable td{display:block;width:100%}.teamtable tr{padding:12px 0;border-bottom:1px solid var(--rule)}.teamtable td,.teamtable tbody tr:last-child td{padding:2px 12px;border:0}.teamtable tbody tr:last-child{border-bottom:2px solid var(--navy)}.teamtable{border-top:2px solid var(--navy)}.teamtable td:first-child{white-space:normal}.teamtable td[data-label]:not(:first-child)::before{content:attr(data-label) ": ";color:var(--muted);font-size:.9em}.teamtable td:empty{display:none}}
+/* Steps: phase headings in the rail, and a plain summary at the top of each step */
+.steps li.ph{padding:14px 0 4px 44px;font-family:var(--display);font-size:16px;color:var(--umber);font-weight:600}
+.steps li.ph:first-child{padding-top:0}
+.sheet.guide{padding:20px 22px 14px}
+.sheet.guide .para.list .ptext,.sheet.guide .para.list li{text-align:left;hyphens:manual}
+.sheet.guide ul{margin:0 0 12px;padding-left:1.2em}.sheet.guide li{margin:0 0 6px}
+.sheet.guide .para.list .ptext{margin:0}
+.records{margin-top:26px}
+.glance{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;background:var(--ivory);border:1px solid var(--rule);border-left:3px solid var(--navy);padding:14px 18px;margin:0 0 26px;font-size:15px}
+.glance dt{color:var(--muted)}
+.glance dd{margin:0}
+.glance dd.aim{font-size:16.5px;color:var(--ink)}
+@media (max-width:560px){.glance{grid-template-columns:1fr}.glance dt{margin-top:6px}}
+.ledger .help{font-size:13.5px;color:var(--muted);margin:5px 0 0;line-height:1.45}
+.roles-other{margin-top:16px;padding-top:12px;border-top:1px solid var(--rule)}
+.roles-other p{font-size:13.5px;color:var(--muted);margin:0 0 8px}
+.roles-other .roles{grid-template-columns:1fr 1fr;margin:0}
+.roles-other .roles button{padding:8px 12px;background:var(--parchment)}
+.roles-other .rt{font-size:14.5px}
+.roles-other .rn{font-size:12.5px}
+@media (max-width:480px){.roles-other .roles{grid-template-columns:1fr}}
+/* Author board */
+.nav-board{font-weight:500}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-left:7px;border-radius:10px;background:var(--alert);color:#fff;font-size:12px;font-weight:600;font-variant-numeric:lining-nums;vertical-align:1px}
+.board{max-width:940px}
+.board .lede{max-width:70ch}
+.integrity{font-size:14px;color:var(--muted);margin:0 0 22px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.integrity .okk{color:var(--teal);font-weight:500}
+.integrity .bad{color:var(--alert);font-weight:600}
+.composer{background:var(--ivory);border:1px solid var(--rule);border-top:3px solid var(--teal);padding:18px 20px;margin:0 0 30px}
+.composer h3{margin:0 0 10px!important;font-size:22px!important}
+.composer .row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px 16px}
+@media (max-width:640px){.composer .row{grid-template-columns:1fr}}
+.composer label{display:block;font-size:14px;margin:0 0 5px}
+.composer select,.composer input,.composer textarea{width:100%;font-family:var(--body);font-size:16px;padding:9px 11px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:2px}
+.composer textarea{min-height:130px;resize:vertical;line-height:1.5}
+.composer select:focus,.composer input:focus,.composer textarea:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-wash)}
+.composer .meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin:6px 0 12px}
+.composer .replying{background:var(--teal-wash);padding:6px 10px;font-size:14px;margin:0 0 12px;display:flex;justify-content:space-between;gap:10px}
+.board-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:0 0 14px;font-size:14.5px}
+.board-tools select{font-family:var(--body);font-size:15px;padding:6px 8px;border:1px solid var(--rule);background:#fff;border-radius:2px}
+.board-tools .spacer{flex:1 1 auto}
+.comments{list-style:none;margin:0;padding:0}
+.cmt{background:var(--ivory);border:1px solid var(--rule);padding:14px 18px 12px;margin:0 0 14px}
+.cmt.new{border-left:3px solid var(--alert)}
+.cmt .ch{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;font-size:14px;color:var(--muted)}
+.cmt .cn{font-family:var(--display);font-weight:600;font-size:20px;color:var(--navy);font-variant-numeric:lining-nums}
+.cmt .ca{color:var(--ink);font-weight:500}
+.cmt .newtag{color:var(--alert);font-weight:600;font-size:12.5px;letter-spacing:.04em}
+.cmt .cref{font-size:14px;margin:6px 0 8px;color:var(--navy)}
+.cmt .cref span{color:var(--muted)}
+.cmt .cb{white-space:pre-wrap;word-break:break-word;margin:0 0 10px}
+.cmt .cst{font-size:13.5px;border-top:1px solid var(--rule);padding-top:8px;margin-top:8px;color:var(--muted)}
+.cmt .cst b{color:var(--navy);font-weight:600}
+.cmt .cst li{margin:2px 0}
+.cmt .cst ul{margin:4px 0 0;padding-left:18px}
+.pill{display:inline-block;font-size:12.5px;padding:1px 8px;border-radius:10px;border:1px solid var(--rule);color:var(--muted);background:var(--parchment)}
+.pill.addressed{border-color:var(--teal);color:var(--teal)}
+.pill.acknowledged{border-color:var(--navy);color:var(--navy)}
+.pill.not_adopted{border-color:var(--umber);color:var(--umber)}
+.cmt .cact{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+.cmt .respond{display:grid;grid-template-columns:200px minmax(0,1fr) auto;gap:8px;margin-top:10px;align-items:start}
+@media (max-width:640px){.cmt .respond{grid-template-columns:1fr}}
+.cmt .respond select,.cmt .respond input{font-family:var(--body);font-size:15px;padding:7px 9px;border:1px solid var(--rule);background:#fff;border-radius:2px;width:100%}
+.alertbar{background:var(--alert-wash);border-left:3px solid var(--alert);padding:10px 16px;margin:0 0 22px;display:flex;justify-content:space-between;align-items:center;gap:10px 18px;flex-wrap:wrap;font-size:15px}
+.alertbar b{color:var(--alert)}
+.comment-on{margin:0 0 22px;display:flex;gap:10px;flex-wrap:wrap}
+.suggest-btn{background:none;border:1px solid var(--teal);color:var(--teal);padding:3px 12px;border-radius:2px;font-size:14px}
+.suggest-btn:hover{background:var(--teal-wash)}
+#change-dialog{width:min(640px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto}
+.chgform{display:grid;gap:14px;margin-top:12px}
+.chgform label{display:block;font-size:14px;margin:0 0 5px}
+.chgform select,.chgform input[type=text],.chgform textarea{width:100%;font-family:var(--body);font-size:16px;padding:9px 11px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:2px}
+.chgform textarea{min-height:110px;resize:vertical;line-height:1.5}
+.chgform select:focus,.chgform input:focus,.chgform textarea:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-wash)}
+.chgform .kind{border:0;padding:0;margin:0;display:grid;gap:6px}
+.chgform .kind label{display:flex;gap:8px;align-items:flex-start;font-size:15.5px;margin:0}
+.chgform .meta{font-size:13.5px;color:var(--muted)}
+.chgform .actions{display:flex;gap:12px;flex-wrap:wrap}
+.chgdone{border-left:3px solid var(--teal);background:var(--teal-wash);padding:12px 16px;margin:12px 0}
+.suggest-note{background:var(--parchment);border-left:3px solid var(--teal);padding:10px 16px;margin:0 0 22px;display:flex;justify-content:space-between;align-items:center;gap:10px 18px;flex-wrap:wrap;font-size:15px}
+.pill.applied{border-color:var(--teal);color:var(--teal)}
+.pill.not_applied{border-color:var(--umber);color:var(--umber)}
+.pill.needs_discussion{border-color:var(--alert);color:var(--alert)}
+.pill.withdrawn{color:var(--muted)}
+.pill.kindtag{border-color:var(--navy);color:var(--navy)}
+.cmt .respond.cr{grid-template-columns:190px 170px minmax(0,1fr) auto}
+@media (max-width:760px){.cmt .respond.cr{grid-template-columns:1fr}}
+.small-btn{background:none;border:1px solid var(--teal);color:var(--teal);padding:4px 11px;border-radius:2px;font-size:14px}
+.small-btn:hover{background:var(--teal-wash)}
+@media (prefers-reduced-motion:no-preference){
+  .appear{animation:appear .5s ease-out both}
+  @keyframes appear{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+@media print{
+  .platform,.mainnav,.rail,.ledger,footer,.pager{display:none!important}
+  body{background:#fff}
+  .shell{display:block;padding:0}
+}
+</style>
+</head>
+<body>
+
+<main id="gate" class="gate" aria-labelledby="gate-title">
+  <div class="gate-wrap">
+    <form class="gate-card" id="gate-form" autocomplete="off">
+      <ul class="partners gate-partners" aria-label="Principal institutions"><li class="lead"><img src="assets/scottish-network.png" alt="SCOTTISH Network" title="SCOTTISH Network"></li><li class="lead"><img src="assets/university-of-st-andrews.png" alt="University of St Andrews" title="University of St Andrews"></li><li class="collab-label">In association with</li><li class="collab"><img src="assets/cfsd-nhs-scotland.png" alt="NHS Scotland Centre for Sustainable Delivery" title="NHS Scotland Centre for Sustainable Delivery"></li><li class="collab"><img src="assets/nhs-golden-jubilee.png" alt="NHS Golden Jubilee" title="NHS Golden Jubilee"></li><li class="collab"><img src="assets/scot.png" alt="Scottish Committee for Orthopaedics and Trauma" title="Scottish Committee for Orthopaedics and Trauma"></li></ul>
+      <p class="gate-kicker">Review reconstruction</p>
+      <h1 id="gate-title">Service-level standards in ACL care</h1>
+      <p>The plan for rebuilding the review, step by step, with a place to record each step. Choose your name and enter your personal passcode. The first time, a one-time code is emailed to you so that you can choose your own passcode.</p>
+      <button class="btn" type="submit" id="open-btn">Sign in</button>
+      <div class="err" id="gate-err" role="alert" hidden></div>
+      <p class="gate-foot">The content of this page is encrypted. It opens only for the named authors, after they sign in with their own passcode.</p>
+    </form>
+    <div class="hosted">
+      <div class="hosted-brand"><span class="hosted-label">Hosted on</span><span class="wordmark">SYMPOSION</span><a class="sa-link" href="https://scottishnetwork.net/" target="_blank" rel="noopener"><img class="sa-logo" src="assets/scottish-network.png" alt="SCOTTISH Network"></a></div>
+      <p>Symposion is a web-based research application designed and hosted by Dr Andrew J Hall, University of St Andrews, for the SCOTTISH Network (<a href="https://scottishnetwork.net/" target="_blank" rel="noopener">scottishnetwork.net</a>). Contact: <a href="mailto:ajh52@st-andrews.ac.uk">ajh52@st-andrews.ac.uk</a>.</p>
+    </div>
+  </div>
+</main>
+
+<div id="app" hidden>
+  <div class="platform" aria-label="Hosting platform">
+    <div class="platform-in">
+      <div class="hosted-brand"><span class="hosted-label">Hosted on</span><span class="wordmark">SYMPOSION</span><a class="sa-link" href="https://scottishnetwork.net/" target="_blank" rel="noopener"><img class="sa-logo" src="assets/scottish-network.png" alt="SCOTTISH Network"></a></div>
+      <div class="status">
+        <button type="button" class="suggest-btn" id="suggest-btn" hidden>Suggest a change</button>
+        <div class="who" id="who" hidden><span id="who-label"></span><button type="button" id="who-change">Change</button></div>
+        <div class="sync" id="sync" aria-live="polite"><span class="dot"></span><span id="sync-text">Not yet saved</span></div>
+      </div>
+    </div>
+  </div>
+
+  <header class="top">
+    <div class="top-in">
+      <ul class="partners" id="partners" aria-label="Principal institutions"><li class="lead"><img src="assets/scottish-network.png" alt="SCOTTISH Network" title="SCOTTISH Network"></li><li class="lead"><img src="assets/university-of-st-andrews.png" alt="University of St Andrews" title="University of St Andrews"></li><li class="collab-label">In association with</li><li class="collab"><img src="assets/cfsd-nhs-scotland.png" alt="NHS Scotland Centre for Sustainable Delivery" title="NHS Scotland Centre for Sustainable Delivery"></li><li class="collab"><img src="assets/nhs-golden-jubilee.png" alt="NHS Golden Jubilee" title="NHS Golden Jubilee"></li><li class="collab"><img src="assets/scot.png" alt="Scottish Committee for Orthopaedics and Trauma" title="Scottish Committee for Orthopaedics and Trauma"></li></ul>
+      <div class="tb-text"><p class="tb-kicker">Review reconstruction</p><p class="tb-title" id="tb-title">Service-level standards in ACL care</p></div>
+    </div>
+    <nav class="mainnav" aria-label="The review, in the order the work is done">
+      <div class="mainnav-in">
+        <button data-view="map" class="nav-map">Overview</button>
+        <button data-view="board" class="nav-board" id="nav-board">Author board<span class="badge" id="board-badge" hidden></span></button>
+        <ol class="phases" id="phases"></ol>
+        <div class="ref" role="group" aria-label="Reference">
+          <button data-view="search">Search strings</button>
+          <button data-view="pack">Files</button>
+          <button data-view="decisions">Decisions</button>
+          <button data-view="changes" id="nav-changes" hidden>Changes<span class="badge" id="changes-badge" hidden></span></button>
+          <button data-view="team" id="nav-team" hidden>Team</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="shell" id="shell">
+    <aside class="rail" id="rail" aria-label="Steps">
+      <button class="steps-toggle" type="button" id="steps-toggle" aria-expanded="false" aria-controls="steps"><span id="toggle-label">Show all steps</span><span id="toggle-count"></span></button>
+      <ol class="steps" id="steps"></ol>
+      <p class="tally" id="tally"></p>
+    </aside>
+    <article class="read" id="read" tabindex="-1"></article>
+    <aside class="ledger" id="ledger" aria-label="This step"></aside>
+  </div>
+
+  <footer>
+    <div class="foot-in">
+      <div>
+        <p style="margin:0 0 6px">Symposion is a web-based research application designed and hosted by Dr Andrew J Hall, University of St Andrews, for the SCOTTISH Network (<a href="https://scottishnetwork.net/" target="_blank" rel="noopener">scottishnetwork.net</a>). Contact: <a href="mailto:ajh52@st-andrews.ac.uk">ajh52@st-andrews.ac.uk</a>.</p>
+        <p style="margin:0">Symposion is an Aurora Performance: Labs application under development, for authorised research group use. <span id="foot-version"></span></p>
+      </div>
+      <blockquote>Life is short, and Art long; the crisis fleeting; experience perilous, and decision difficult.<cite>Hippocrates, Aphorisms I.1, trans. Francis Adams</cite></blockquote>
+    </div>
+  </footer>
+</div>
+
+<dialog id="role-dialog" aria-labelledby="role-title"><div id="role-body"></div></dialog>
+<dialog id="fix-dialog" aria-labelledby="fix-title"><div id="fix-body"></div></dialog>
+<dialog id="change-dialog" aria-labelledby="chg-title"><div id="change-body"></div></dialog>
+
+<script>
+"use strict";
+const CONFIG = {"workstream": "snap-acl", "version": "v0_1", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Administrator", "name": "Dr Andrew Hall", "locked": true}, {"key": "senior", "title": "Senior Author", "name": "Dr Andrew Hall", "hidden": true}]};
+const STORE_KEY = "symposion." + CONFIG.workstream + ".v2";
+let CONTENT = null, KEY = null, ENV = null;
+let person = null;   // { id, role, seq, name } for a registered person; { role: "readonly" } for a viewer
+let cred = null;     // the passcode sent with saves and loads: the person's own, or the administrator's
+let reachable = true;
+const ROUTE = "manuscript";
+const blankState = () => ({ route: ROUTE, view: "map", stepIndex: { [ROUTE]: 0 },
+                            steps: { [ROUTE]: {} }, queue: [], lastSync: null, positioned: false, open: {} });
+let state = blankState();
+const isAdmin = () => !!person && person.role === "admin" && !!cred;
+const readOnly = () => !!person && person.role === "readonly";
+
+/* ---------- storage, guarded: a copy for the person on this device; the saved copy lives at Symposion ---------- */
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function sessGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+function sessSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+function clientRef() {
+  let c = lsGet(STORE_KEY + ".client");
+  if (!c) { c = crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2); lsSet(STORE_KEY + ".client", c); }
+  return c;
+}
+const cacheKey = () => STORE_KEY + ".person." + (person && person.id ? person.id : "none");
+function load() { state = blankState(); if (!person || !person.id) return; try { const s = JSON.parse(lsGet(cacheKey()) || "null"); if (s) Object.assign(state, s); } catch (e) {} }
+function save() { if (person && person.id) lsSet(cacheKey(), JSON.stringify(state)); }
+function readLast() { try { return JSON.parse(lsGet(STORE_KEY + ".last") || "null"); } catch (e) { return null; } }
+
+/* ---------- Symposion functions ---------- */
+const MSG = {
+  offline: "Symposion could not be reached. Check your connection and try again.",
+  server: "Something went wrong at Symposion. Try again in a moment.",
+  admin_denied: "That passcode was not accepted.",
+  admin_locked: "Too many attempts. Wait fifteen minutes and try again.",
+  bad_passcode: "That passcode is not right.",
+  no_passcode: "No passcode has been set for this person yet.",
+  person_locked: "Too many wrong attempts. Wait fifteen minutes, or choose Forgotten it and email yourself a one-time code.",
+  bad_new_passcode: "Choose a passcode of 6 to 64 characters.",
+  bad_code: "That code was not accepted. It may have expired or been used; you can ask for a new one.",
+  not_configured: "Codes cannot be emailed just now. Please contact Dr Hall.",
+  already_registered: "That role or name already has a passcode. Go back and enter it.",
+  not_found: "No one is registered under that name in this role.",
+  not_listed: "That name is not registered for this review. Please contact Dr Hall.",
+  bad_name: "Enter your name, between 2 and 80 characters.",
+  bad_workstream: "This review is not set up for saving yet.",
+  name_taken: "Another person in that role already has that name.",
+  bad_person: "That registration cannot be changed.",
+  bad_target: "That registration cannot be merged into the one chosen."
+};
+async function rpc(fn, args) {
+  let r;
+  try {
+    r = await fetch(CONFIG.supabase.url + "/rest/v1/rpc/" + fn, { method: "POST",
+      headers: { apikey: CONFIG.supabase.key, Authorization: "Bearer " + CONFIG.supabase.key, "Content-Type": "application/json" },
+      body: JSON.stringify(args) });
+  } catch (e) { reachable = false; throw new Error("offline"); }
+  let body = null; try { body = await r.json(); } catch (e) {}
+  if (!r.ok) { reachable = r.status < 500; throw new Error("server"); }
+  reachable = true;
+  if (body && body.error) throw new Error(body.error);
+  return body;
+}
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ROLES = () => (CONTENT && CONTENT.roles) || CONFIG.roles || [];
+const roleDef = k => ROLES().find(r => r.key === k) || { key: k, title: k };
+const personLabel = p => roleDef(p.role).title + (p.seq && !roleDef(p.role).unnumbered ? " " + p.seq : "");
+const personName = p => p.name || roleDef(p.role).name || "";
+const personFull = p => personLabel(p) + (personName(p) ? ": " + personName(p) : "");
+
+function applyEvent(steps, route, key, event, recorded, at) {
+  if (!steps[route]) return;
+  const s = steps[route][key] || (steps[route][key] = { values: {} });
+  Object.assign(s.values, recorded || {});
+  if (event === "completed") { s.done = true; s.at = at; }
+  else if (event === "reopened") { s.done = false; s.at = at; }
+}
+
+/* ---------- crypto ---------- */
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, saltB64) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(saltB64), iterations: CONFIG.kdf.iterations, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+}
+async function decryptBytes(key, ivB64, data) {
+  return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(ivB64) }, key, data));
+}
+
+async function unlock(pass) {
+  const res = await fetch(CONFIG.content, { cache: "no-store" });
+  if (!res.ok) throw new Error("fetch");
+  const env = await res.json();
+  const key = await deriveKey(pass, env.salt);
+  let plain;
+  try { plain = await decryptBytes(key, env.iv, b64(env.ct)); }
+  catch (e) { const err = new Error("pass"); throw err; }
+  CONTENT = JSON.parse(new TextDecoder().decode(plain));
+  ENV = env;
+  KEY = key;
+  sessSet(STORE_KEY + ".p", pass);
+}
+
+/* ---------- gate ---------- */
+const gateForm = document.getElementById("gate-form");
+gateForm.addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const btn = document.getElementById("open-btn"), err = document.getElementById("gate-err");
+  err.hidden = true;
+  showDialog("roles");
+});
+
+/* ---------- rendering helpers ---------- */
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, html = "") => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); if (html) e.innerHTML = html; return e; };
+const IND = () => !!person && person.role === "second";   // co-author and independent reviewer: the author view plus her coding sets
+const stepVisible = s => (person && person.role === "admin") || IND() || (s.audience || "authors") !== "reviewer";
+const steps = () => CONTENT.routes[state.route].steps.filter(stepVisible);
+const codingSets = () => CONTENT.routes[state.route].steps.filter(s => s.audience === "reviewer");
+const IND_LOCKED = () => IND() && !codingSets().every(s => stepDone(ROUTE, s.key));
+const lockedFor = s => IND_LOCKED() && (s.audience || "authors") !== "reviewer";
+function lockNote(s) {
+  const w = el("div", { class: "appear lockbox" });
+  const left = codingSets().filter(x => !stepDone(ROUTE, x.key)).length;
+  w.appendChild(el("p", { class: "lede" }, `This part opens once the independent coding is complete, so that your codes are made without knowledge of the review\u2019s findings. ${left === 1 ? "One coding set remains" : left + " coding sets remain"} to be marked complete.`));
+  const first = codingSets().find(x => !stepDone(ROUTE, x.key)) || codingSets()[0];
+  const b = el("button", { class: "btn live", type: "button" }, `Go to ${esc(first.title)}`); b.onclick = () => goStep(first.n); w.appendChild(b);
+  return w;
+}
+function applyLock() {
+  const L = IND_LOCKED();
+  document.querySelectorAll('#nav-board, .ref button[data-view="pack"], .ref button[data-view="decisions"]').forEach(b => { b.hidden = L; });
+  if (L && !["map", "walk"].includes(state.view)) state.view = "map";
+}
+const fmtTime = iso => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+let started = false;
+function start(signedIn) {
+  document.getElementById("gate").hidden = true;
+  document.getElementById("app").hidden = false;
+  $("#foot-version").textContent = "Reconstruction plan of " + CONTENT.meta.ms_label + ", portal " + CONTENT.meta.version + ", built " + CONTENT.meta.built + ".";
+  if (!started) {
+    started = true;
+    document.querySelectorAll(".mainnav button[data-view]").forEach(b => b.addEventListener("click", () => { state.view = b.dataset.view; save(); render(); window.scrollTo({ top: 0 }); }));
+    document.querySelectorAll(".route button").forEach(b => b.addEventListener("click", () => { state.route = b.dataset.route; save(); render(); }));
+    $("#steps-toggle").addEventListener("click", () => setRail(!$("#rail").classList.contains("open")));
+    $("#who-change").addEventListener("click", () => { save(); showDialog("roles"); });
+    $("#role-dialog").addEventListener("cancel", ev => { if (!person) ev.preventDefault(); });   // before sign-in the gate stays behind it
+  }
+  render();
+  updateSync();
+  if (signedIn) return;
+  const last = readLast();
+  if (last && last.role === "readonly") enterReadOnly();
+  else if (last && last.role === "admin") showDialog("admin");
+  else if (last && last.id) {
+    const saved = sessGet(STORE_KEY + ".c");
+    if (saved) { cred = saved; becomePerson(last); }
+    else showDialog("passcode", { who: last });
+  } else showDialog("roles");
+}
+
+function setRail(open) {
+  $("#rail").classList.toggle("open", open);
+  $("#steps-toggle").setAttribute("aria-expanded", String(open));
+  $("#toggle-label").textContent = open ? "Hide the steps" : "Show all steps";
+}
+
+/* ---------- who is working: roles, names, personal passcodes, the locked administrator, read only ---------- */
+const LOCK = '<svg class="lock" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
+function closeDialog() { const d = $("#role-dialog"); if (d.open) d.close(); }
+function dlgError(box, e) {
+  box.querySelectorAll(".err").forEach(x => x.remove());
+  box.appendChild(el("div", { class: "err", role: "alert" }, esc(MSG[e && e.message] || MSG.server)));
+}
+const passField = (id, label) => `<div class="dlg-field"><label for="${id}">${label}</label><input id="${id}" type="password" required spellcheck="false" autocapitalize="off" autocomplete="off" maxlength="64"></div>`;
+const showToggle = f => { const c = f.querySelector("[data-show]"); if (c) c.onchange = () => f.querySelectorAll("input[type=password],input[data-pw]").forEach(i => { i.type = c.checked ? "text" : "password"; i.dataset.pw = "1"; }); };
+const SHOW = `<label class="dlg-check"><input type="checkbox" data-show> Show what I type</label>`;
+
+async function projectPassOk(pass) {
+  try { await decryptBytes(await deriveKey(pass, ENV.salt), ENV.iv, b64(ENV.ct)); return true; } catch (e) { return false; }
+}
+  function focusFirst(f, sel) {
+    setTimeout(() => {
+      const a = document.activeElement;
+      if (a && a !== document.body && f.contains(a)) return;   // the person is already in a field
+      const t = f.querySelector(sel); if (t && t.isConnected) t.focus();
+    }, 30);
+  }
+
+function showDialog(step, ctx = {}) {
+  const d = $("#role-dialog"), box = $("#role-body");
+  box.innerHTML = "";
+  const back = () => showDialog("roles");
+  if (step === "roles") {
+    box.appendChild(el("h3", { id: "role-title" }, "Who is reviewing?"));
+    box.appendChild(el("p", { class: "dlg-note" }, "Step 1 of 2. Choose your name; you will then enter your personal passcode, or, the first time, a one-time code emailed to you."));
+    if (ctx.note) box.appendChild(el("p", { class: "dlg-note" }, esc(ctx.note)));
+    const wrap = el("div", { class: "roles" });
+    const other = el("div", { class: "roles" });
+    const add = (rd, name, sub, locked, go) => {
+      const b = el("button", { type: "button", "data-role": rd.key, class: locked ? "locked" : "" });
+      if (name) b.setAttribute("data-name", name);
+      b.appendChild(el("span", { class: "rt" }, esc(name || rd.title)));
+      b.appendChild(el("span", { class: "rn" }, (locked ? LOCK : "") + esc(sub)));
+      b.onclick = async () => { b.disabled = true; try { await go(); } catch (e) { dlgError(box, e); } b.disabled = false; };
+      (rd.key === "readonly" ? other : wrap).appendChild(b);
+    };
+    ROLES().filter(rd => !rd.hidden && rd.key !== "readonly").forEach(rd => {
+      if (rd.key === "admin") add(rd, rd.name, rd.title, true, async () => showDialog("admin"));
+      else if (rd.key === "readonly") add(rd, null, rd.sub || "passcode required", true, async () => showDialog("readonly"));
+      else if (rd.roster) rd.roster.forEach(nm => add(rd, nm, rd.title, false, async () => {
+        const r = await rpc("symposion_lookup", { p_slug: CONFIG.workstream, p_role: rd.key, p_name: nm });
+        if (!r.found) throw new Error("not_listed");
+        const who = { role: rd.key, seq: r.seq, name: r.name };
+        showDialog(r.first ? "reset" : "passcode", { who, first: !!r.first });
+      }));
+      else add(rd, rd.name, rd.title, false, async () => {
+        const r = await rpc("symposion_lookup", { p_slug: CONFIG.workstream, p_role: rd.key });
+        if (!r.found) throw new Error("not_listed");
+        showDialog(r.first ? "reset" : "passcode", { who: { role: rd.key }, first: !!r.first });
+      });
+    });
+    box.appendChild(wrap);
+    if (other.children.length) {
+      const o = el("div", { class: "roles-other" });
+      o.appendChild(el("p", {}, "Other access"));
+      o.appendChild(other); box.appendChild(o);
+    }
+  } else if (step === "name") {
+    const rd = ctx.rd;
+    box.appendChild(el("h3", { id: "role-title" }, esc(rd.title)));
+    const f = el("form", { autocomplete: "off" });
+    f.innerHTML = `<div class="dlg-field"><label for="nm">Your name</label><input id="nm" maxlength="80" required spellcheck="false" autocomplete="name"></div>
+      <div class="dlg-actions"><button class="btn live" type="submit">Continue</button><button class="btn quiet" type="button" data-back>Back</button></div>`;
+    f.querySelector("#nm").value = ctx.name || "";
+    f.querySelector("[data-back]").onclick = back;
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const name = f.querySelector("#nm").value, btn = f.querySelector(".btn.live");
+      btn.disabled = true;
+      try {
+        const r = await rpc("symposion_lookup", { p_slug: CONFIG.workstream, p_role: rd.key, p_name: name });
+        if (r.found) showDialog("passcode", { who: { role: rd.key, seq: r.seq, name: r.name } });
+        else showDialog("confirm", { rd, name, next: r.next_seq });
+      } catch (e) { btn.disabled = false; dlgError(f, e); }
+    };
+    box.appendChild(f);
+    focusFirst(f, "#nm");
+  } else if (step === "confirm") {
+    const { rd, name, next } = ctx;
+    box.appendChild(el("h3", { id: "role-title" }, "New registration"));
+    box.appendChild(el("p", {}, `No one is registered as <strong>${esc(name)}</strong> in this role yet. You will be <strong>${esc(rd.title)} ${next}</strong>.`));
+    box.appendChild(el("p", { class: "dlg-note" }, "If you have worked here before, go back and check the spelling of your name."));
+    const a = el("div", { class: "dlg-actions" });
+    const ok = el("button", { class: "btn live", type: "button" }, "Continue");
+    ok.onclick = () => showDialog("setpass", { rd, name, next });
+    const bk = el("button", { class: "btn quiet", type: "button" }, "Change the name");
+    bk.onclick = () => showDialog("name", { rd, name });
+    a.appendChild(ok); a.appendChild(bk); box.appendChild(a);
+  } else if (step === "setpass") {
+    const { rd, name, next } = ctx;
+    box.appendChild(el("h3", { id: "role-title" }, "Choose your passcode"));
+    box.appendChild(el("p", { class: "dlg-note" }, esc(rd.named ? `${rd.title} ${next}: ${name}` : (rd.title + (rd.name ? ", " + rd.name : "")))));
+    box.appendChild(el("p", { class: "dlg-note" }, "Your passcode opens your own saved progress each time you return, on any device. Keep it safe: if you forget it, the administrator can set a temporary one."));
+    const f = el("form", { autocomplete: "off" });
+    f.innerHTML = passField("pc1", "Passcode, 6 to 64 characters") + passField("pc2", "Repeat the passcode") + SHOW +
+      `<div class="dlg-actions"><button class="btn live" type="submit">Save passcode and open</button><button class="btn quiet" type="button" data-back>Back</button></div>`;
+    showToggle(f);
+    f.querySelector("[data-back]").onclick = back;
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const a = f.querySelector("#pc1").value, b2 = f.querySelector("#pc2").value, btn = f.querySelector(".btn.live");
+      if (a.length < 6) return dlgError(f, new Error("bad_new_passcode"));
+      if (a !== b2) { f.querySelectorAll(".err").forEach(x => x.remove()); return f.appendChild(el("div", { class: "err", role: "alert" }, "The two passcodes are not the same.")); }
+      btn.disabled = true;
+      try {
+        const r = await rpc("symposion_register", { p_slug: CONFIG.workstream, p_role: rd.key, p_name: rd.named ? name : null, p_pass: a });
+        cred = a; await becomePerson(r);
+      } catch (e) { btn.disabled = false; dlgError(f, e); }
+    };
+    box.appendChild(f);
+    focusFirst(f, "#pc1");
+  } else if (step === "passcode") {
+    const w = ctx.who;
+    box.appendChild(el("h3", { id: "role-title" }, "Your personal passcode"));
+    box.appendChild(el("p", { class: "dlg-note" }, esc(personFull(w))));
+    box.appendChild(el("p", { class: "dlg-note" }, "Step 2 of 2. Enter the personal passcode you chose when you first signed in."));
+    if (ctx.error) box.appendChild(el("div", { class: "err", role: "alert" }, esc(MSG[ctx.error] || MSG.server)));
+    const f = el("form", { autocomplete: "off" });
+    f.innerHTML = passField("pc", "Personal passcode") + SHOW +
+      `<div class="dlg-actions"><button class="btn live" type="submit">Open my progress</button><button class="btn quiet" type="button" data-back>Choose another name</button></div>
+       <p class="dlg-note">First time here, or forgotten it? <a href="#" data-forgot>Email me a one-time code</a> so that I can choose my personal passcode.</p>`;
+    showToggle(f);
+    f.querySelector("[data-back]").onclick = back;
+    f.querySelector("[data-forgot]").onclick = ev => { ev.preventDefault(); showDialog("reset", { who: w }); };
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const pass = f.querySelector("#pc").value, btn = f.querySelector(".btn.live");
+      btn.disabled = true;
+      try {
+        const r = await rpc("symposion_enter", { p_slug: CONFIG.workstream, p_role: w.role, p_name: w.name || null, p_pass: pass });
+        cred = pass;
+        if (r.must_change) showDialog("change", { r, old: pass }); else await enterWith(r);
+      } catch (e) { btn.disabled = false; f.querySelector("#pc").value = ""; dlgError(f, e); }
+    };
+    box.appendChild(f);
+    focusFirst(f, "#pc");
+  } else if (step === "reset") {
+    const w = ctx.who;
+    box.appendChild(el("h3", { id: "role-title" }, ctx.first ? "First sign-in" : "Choose a new personal passcode"));
+    box.appendChild(el("p", { class: "dlg-note" }, esc(personFull(w))));
+    if (!ctx.sent) {
+      box.appendChild(el("p", { class: "dlg-note" }, ctx.first
+        ? "Step 2 of 2. A one-time code will be emailed to the address Dr Hall holds for you. It is valid for 15 minutes and can be used once. You will then choose your own personal passcode, which is the only passcode you need from then on."
+        : "A one-time code will be emailed to the address held for you. It is valid for 15 minutes and can be used once. Your current passcode stays valid until you use the code."));
+      const f = el("form", { autocomplete: "off" });
+      f.innerHTML = `<div class="dlg-actions"><button class="btn live" type="submit">Email me a code</button><button class="btn quiet" type="button" data-back>Back</button></div>`;
+      f.querySelector("[data-back]").onclick = () => ctx.first ? back() : showDialog("passcode", { who: w });
+      f.onsubmit = async ev => {
+        ev.preventDefault();
+        const btn = f.querySelector(".btn.live"); btn.disabled = true;
+        try {
+          let r; try { r = await fetch(CONFIG.supabase.url + "/functions/v1/symposion-reset", { method: "POST",
+            headers: { apikey: CONFIG.supabase.key, Authorization: "Bearer " + CONFIG.supabase.key, "Content-Type": "application/json" },
+            body: JSON.stringify({ slug: CONFIG.workstream, role: w.role, name: w.name || null }) }); } catch (e) { throw new Error("offline"); }
+          if (r.status === 503) throw new Error("not_configured");
+          if (!r.ok) throw new Error("server");
+          showDialog("reset", { who: w, sent: true, first: ctx.first });
+        } catch (e) { btn.disabled = false; dlgError(f, e); }
+      };
+      box.appendChild(f);
+    } else {
+      box.appendChild(el("p", { class: "dlg-note" }, "If an address is held for you, a code is on its way. Check your inbox and junk folder; it can take a minute or two. Enter it below with the new personal passcode you want to use."));
+      const f = el("form", { autocomplete: "off" });
+      f.innerHTML = `<div class="dlg-field"><label for="rc">One-time code from the email</label><input id="rc" required spellcheck="false" autocapitalize="characters" autocomplete="one-time-code" maxlength="20"></div>` +
+        passField("pc1", "New personal passcode, 6 to 64 characters") + passField("pc2", "Repeat the new passcode") + SHOW +
+        `<div class="dlg-actions"><button class="btn live" type="submit">Save new passcode and open</button><button class="btn quiet" type="button" data-again>Send another code</button></div>`;
+      showToggle(f);
+      f.querySelector("[data-again]").onclick = () => showDialog("reset", { who: w, first: ctx.first });
+      f.onsubmit = async ev => {
+        ev.preventDefault();
+        const code = f.querySelector("#rc").value, a = f.querySelector("#pc1").value, b2 = f.querySelector("#pc2").value, btn = f.querySelector(".btn.live");
+        if (a.length < 6) return dlgError(f, new Error("bad_new_passcode"));
+        if (a !== b2) { f.querySelectorAll(".err").forEach(x => x.remove()); return f.appendChild(el("div", { class: "err", role: "alert" }, "The two passcodes are not the same.")); }
+        btn.disabled = true;
+        try {
+          await rpc("symposion_reset_confirm", { p_slug: CONFIG.workstream, p_role: w.role, p_name: w.name || null, p_code: code, p_new: a });
+          const r = await rpc("symposion_enter", { p_slug: CONFIG.workstream, p_role: w.role, p_name: w.name || null, p_pass: a });
+          cred = a; await enterWith(r);
+        } catch (e) { btn.disabled = false; dlgError(f, e); }
+      };
+      box.appendChild(f);
+      focusFirst(f, "#rc");
+    }
+  } else if (step === "change") {
+    const { r, old } = ctx;
+    box.appendChild(el("h3", { id: "role-title" }, "Choose a new passcode"));
+    box.appendChild(el("p", { class: "dlg-note" }, "You have signed in with your temporary passcode. Choose your own personal passcode now. It replaces the temporary one, and from now on it is the passcode you enter after choosing your name."));
+    const f = el("form", { autocomplete: "off" });
+    f.innerHTML = passField("pc1", "New passcode, 6 to 64 characters") + passField("pc2", "Repeat the new passcode") + SHOW +
+      `<div class="dlg-actions"><button class="btn live" type="submit">Save and open</button></div>`;
+    showToggle(f);
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const a = f.querySelector("#pc1").value, b2 = f.querySelector("#pc2").value, btn = f.querySelector(".btn.live");
+      if (a.length < 6) return dlgError(f, new Error("bad_new_passcode"));
+      if (a !== b2) { f.querySelectorAll(".err").forEach(x => x.remove()); return f.appendChild(el("div", { class: "err", role: "alert" }, "The two passcodes are not the same.")); }
+      btn.disabled = true;
+      try { await rpc("symposion_set_passcode", { p_slug: CONFIG.workstream, p_person: r.id, p_old: old, p_new: a }); cred = a;
+            await enterWith(await rpc("symposion_enter", { p_slug: CONFIG.workstream, p_role: r.role, p_name: r.name || null, p_pass: a })); }
+      catch (e) { btn.disabled = false; dlgError(f, e); }
+    };
+    box.appendChild(f);
+    focusFirst(f, "#pc1");
+  } else if (step === "admin") {
+    const rd = ROLES().find(r => r.key === "admin");
+    box.appendChild(el("h3", { id: "role-title" }, esc(rd.title)));
+    box.appendChild(el("p", { class: "dlg-note" }, "Step 2 of 2. This role is locked. Enter your administrator passcode."));
+    const f = el("form", { autocomplete: "off" });
+    f.innerHTML = passField("ap", "Administrator passcode") +
+      `<div class="dlg-actions"><button class="btn live" type="submit">Unlock</button><button class="btn quiet" type="button" data-back>Choose another name</button></div>`;
+    f.querySelector("[data-back]").onclick = back;
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const secret = f.querySelector("#ap").value, btn = f.querySelector(".btn.live");
+      btn.disabled = true;
+      try {
+        const r = await rpc("symposion_enter", { p_slug: CONFIG.workstream, p_role: "admin", p_pass: secret });
+        cred = secret;
+        await enterWith(r);
+      } catch (e) { btn.disabled = false; f.querySelector("#ap").value = ""; dlgError(f, e); }
+    };
+    box.appendChild(f);
+    focusFirst(f, "#ap");
+  } else if (step === "readonly") {
+    const rd = CONTENT.roles.find(r => r.key === "readonly");
+    box.appendChild(el("h3", { id: "role-title" }, esc(rd.title)));
+    box.appendChild(el("p", { class: "dlg-note" }, "You can read every part of the manuscript, with the entry boxes and buttons greyed out. Enter the project passcode."));
+    const f = el("form", { autocomplete: "off" });
+    f.innerHTML = passField("rp", "Project passcode") +
+      `<div class="dlg-actions"><button class="btn live" type="submit">Open to read</button><button class="btn quiet" type="button" data-back>Choose another name</button></div>`;
+    f.querySelector("[data-back]").onclick = back;
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const btn = f.querySelector(".btn.live"); btn.disabled = true;
+      if (await projectPassOk(f.querySelector("#rp").value.trim())) enterReadOnly();
+      else { btn.disabled = false; f.querySelector("#rp").value = ""; dlgError(f, new Error("admin_denied")); }
+    };
+    box.appendChild(f);
+    focusFirst(f, "#rp");
+  }
+  if (!d.open && d.showModal) d.showModal();
+}
+
+function enterReadOnly() {
+  person = { role: "readonly" }; cred = null; resetBoard();
+  lsSet(STORE_KEY + ".last", JSON.stringify({ role: "readonly" }));
+  state = blankState(); state.positioned = true;
+  closeDialog(); updateWho(); render(); updateSync();
+}
+
+/* Signed in: the reply carries the page key for a named author, so the content is opened here the first time in this tab. */
+async function enterWith(r) {
+  if (!CONTENT) {
+    if (!r || !r.site_key) throw new Error("not_listed");
+    try { await unlock(r.site_key); } catch (e) { throw new Error("server"); }
+    start(true);
+  }
+  await becomePerson(r);
+}
+
+/* The person is known and has proved who they are: load their saved progress from Symposion, then show the walkthrough. */
+async function becomePerson(p) {
+  resetBoard();
+  person = { id: p.id, role: p.role, seq: p.seq ?? null, name: p.name ?? null };
+  sessSet(STORE_KEY + ".c", p.role === "admin" ? "" : (cred || ""));
+  lsSet(STORE_KEY + ".last", JSON.stringify(person));
+  load();
+  closeDialog();
+  await pullServer();
+  if (!person) return;
+  if (state.view === "team" && !isAdmin()) state.view = "walk";
+  save(); updateWho(); render(); updateSync(); flush();
+  fetchChanges();
+  if (await fetchBoard(false) && (state.view === "map" || state.view === "walk")) render();
+}
+
+async function pullServer() {
+  try {
+    const res = await rpc("symposion_load", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred });
+    const steps = { [ROUTE]: {} };
+    (res.events || []).forEach(e => applyEvent(steps, e.route, e.step_key, e.event, e.recorded, e.created_at));
+    state.queue.forEach(q => applyEvent(steps, q.route, q.step_key, q.event, q.recorded, q.local_at));
+    state.steps = steps;
+    if (!state.positioned) {
+      for (const route of Object.keys(CONTENT.routes)) {
+        const list = CONTENT.routes[route].steps;
+        const i = list.findIndex(s => !(steps[route][s.key] || {}).done);
+        state.stepIndex[route] = i < 0 ? list.length - 1 : i;
+      }
+      const anyDone = Object.values(steps).some(r => Object.values(r).some(x => x.done));
+      state.view = anyDone ? "walk" : "map";
+      state.positioned = true;
+    }
+    if (!state.queue.length) state.lastSync = new Date().toISOString();
+  } catch (e) {
+    if (e.message === "person_gone") { personGone(); return; }
+    if (["bad_passcode", "no_passcode", "person_locked", "admin_denied", "admin_locked"].includes(e.message)) {
+      const who = { id: person.id, role: person.role, seq: person.seq, name: person.name };
+      cred = null; sessSet(STORE_KEY + ".c", ""); person = null; state = blankState();
+      updateWho(); render(); updateSync();
+      showDialog(who.role === "admin" ? "admin" : "passcode", { who, error: e.message });
+      return;
+    }
+    /* otherwise carry on from the copy kept on this device */
+  }
+}
+
+function personGone() {
+  lsSet(STORE_KEY + ".last", ""); sessSet(STORE_KEY + ".c", ""); resetBoard();
+  person = null; cred = null; state = blankState();
+  updateWho(); render(); updateSync();
+  showDialog("roles", { note: "Your earlier registration is no longer active. Choose your role again." });
+}
+
+function updateWho() {
+  const w = $("#who");
+  w.hidden = !person;
+  if (person) $("#who-label").textContent = readOnly() ? "Read only" : personFull(person);
+  $("#nav-team").hidden = !isAdmin();
+  document.body.classList.toggle("ro", readOnly());
+}
+
+function render() {
+  document.querySelectorAll(".mainnav-in > button[data-view], .ref button").forEach(b => b.setAttribute("aria-current", b.dataset.view === state.view ? "page" : "false"));
+  applyLock();
+  renderPhases();
+  const shell = $("#shell");
+  const walk = state.view === "walk";
+  shell.classList.toggle("wide", !walk);
+  $("#rail").hidden = !walk; $("#ledger").hidden = !walk;
+  updateChangeUi();
+  $("#read").classList.toggle("wide-read", state.view === "team" || state.view === "map" || state.view === "board" || state.view === "changes");
+  if (walk) renderWalk();
+  else if (state.view === "map") renderMap();
+  else if (state.view === "board") renderBoard();
+  else if (state.view === "changes") renderChanges();
+  else if (state.view === "search") renderSearch();
+  else if (state.view === "pack") renderPack();
+  else if (state.view === "team" && isAdmin()) renderTeam();
+  else renderDecisions();
+}
+
+function renderWalk() {
+  applyLock();
+  document.querySelectorAll(".route button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.route === state.route)));
+  const list = $("#steps"); list.innerHTML = "";
+  const idx = state.stepIndex[state.route] || 0;
+  let done = 0;
+  steps().forEach((s, i) => {
+    const rec = state.steps[state.route][s.key] || {};
+    if (rec.done) done++;
+    const ph = phases().findIndex(p => p.steps[0] === s.n);
+    if (ph >= 0) list.appendChild(el("li", { class: "ph", "aria-hidden": "true" }, `${ph + 1}. ${esc(phases()[ph].title)}`));
+    const li = el("li", { class: "step " + (rec.done ? "done " : "") + (i === idx ? "current" : "") });
+    const b = el("button", { type: "button", "data-n": String(s.n), "aria-current": i === idx ? "step" : "false" },
+      `<span class="node" aria-hidden="true">${i + 1}</span><span class="t">${s.title}${rec.done ? '<span class="sr"> (complete)</span>' : ""}</span>`);
+    b.onclick = () => { state.stepIndex[state.route] = i; save(); setRail(false); renderWalk(); $("#read").focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: "smooth" }); };
+    li.appendChild(b); list.appendChild(li);
+  });
+  $("#tally").innerHTML = `<strong>${done} of ${steps().length}</strong> steps marked complete.`;
+  $("#toggle-count").textContent = `${done} of ${steps().length} complete`;
+  const s = steps()[idx];
+  const read = $("#read");
+  read.innerHTML = "";
+  const ab = alertBar(); if (ab) read.appendChild(ab);
+  if (idx === 0 && CONTENT.routes[state.route].intro_text) read.appendChild(el("p", { class: "intro" }, CONTENT.routes[state.route].intro_text));
+  const pi = phaseIndexOf(s.n);
+  read.appendChild(el("p", { class: "kicker" }, `Step ${s.n} of ${steps().length}` + (pi >= 0 ? `, ${esc(phases()[pi].title)}` : "")));
+  read.appendChild(el("h2", {}, s.title));
+  if (s.aim) {
+    const g = el("dl", { class: "glance", "aria-label": "This step at a glance" });
+    g.innerHTML = `<dt>What it is for</dt><dd class="aim">${esc(s.aim)}</dd><dt>Who</dt><dd>${esc(s.who || "")}</dd><dt>Where</dt><dd>${esc(s.where || "")}</dd>` +
+      `<dt>To record here</dt><dd>${recordsFor(s).length ? esc(recordsFor(s).map(t => t.title).join("; ")) + "." : "Your view of the step, then mark it complete."}</dd>`;
+    read.appendChild(g);
+  }
+  if (canPost() && !lockedFor(s)) { const co = el("div", { class: "comment-on" }); const area = s.title; co.appendChild(commentOn(area)); co.appendChild(suggestOn(area)); read.appendChild(co); }
+  read.appendChild(lockedFor(s) ? lockNote(s) : renderBody(s));
+  const pager = el("div", { class: "pager" });
+  if (idx > 0) { const p = el("button", { class: "btn quiet", type: "button" }, "Previous step"); p.onclick = () => { state.stepIndex[state.route] = idx - 1; save(); renderWalk(); }; pager.appendChild(p); } else pager.appendChild(el("span"));
+  if (idx < steps().length - 1) { const n = el("button", { class: "btn quiet", type: "button" }, "Next step"); n.onclick = () => { state.stepIndex[state.route] = idx + 1; save(); renderWalk(); }; pager.appendChild(n); }
+  read.appendChild(pager);
+  if (lockedFor(s)) { const led = $("#ledger"); led.className = "ledger"; led.innerHTML = "<h4>This step</h4><p class=\"hint\">Opens when the coding is complete.</p>"; } else renderLedger(s);
+}
+
+/* ---------- the order of the research: phases, the navigation strip and the route map ---------- */
+const phases = () => ((CONTENT.phases || {})[state.route] || []).filter(p => p.steps.some(n => steps().some(s => s.n === n)));
+const phaseIndexOf = n => phases().findIndex(p => p.steps.includes(n));
+const stepDone = (route, key) => !!((state.steps[route] || {})[key] || {}).done;
+const ROLE_WORDS = { lead: /lead reviewer/i, second: /second reviewer/i, senior: /senior reviewer/i };
+const isMine = s => !!person && !!ROLE_WORDS[person.role] && ROLE_WORDS[person.role].test(s.who || "");
+function goStep(n) {
+  const i = steps().findIndex(s => s.n === n);
+  if (i >= 0) state.stepIndex[state.route] = i;
+  state.view = "walk"; save(); render(); window.scrollTo({ top: 0 });
+}
+function renderPhases() {
+  const ol = $("#phases"); ol.innerHTML = "";
+  const cur = state.view === "walk" ? phaseIndexOf((steps()[state.stepIndex[state.route] || 0] || {}).n) : -1;
+  phases().forEach((p, i) => {
+    const total = p.steps.length, done = p.steps.filter(n => { const s = steps().find(x => x.n === n); return s && stepDone(ROUTE, s.key); }).length;
+    const li = el("li", { class: done === total ? "done" : "" });
+    const b = el("button", { type: "button", "data-view": "walk", "data-phase": String(i), "aria-current": i === cur ? "step" : "false",
+      title: p.desc }, `<span class="pn" aria-hidden="true">${i + 1}</span><span class="pt">${esc(p.title)}</span><span class="pc">${done}/${total}</span><span class="sr">, ${done} of ${total} marked complete</span>`);
+    b.onclick = () => goStep(p.steps[0]);
+    li.appendChild(b); ol.appendChild(li);
+  });
+}
+function routeSwitch() {
+  const r = el("div", { class: "route", role: "group", "aria-label": "Route" });
+  [["nested_knowledge", "Nested Knowledge"], ["conventional", "Conventional route"]].forEach(([k, t]) => {
+    const b = el("button", { type: "button", "data-route": k, "aria-pressed": String(state.route === k) }, t);
+    b.onclick = () => { state.route = k; save(); render(); };
+    r.appendChild(b);
+  });
+  return r;
+}
+function renderMap() {
+  const read = $("#read"); read.innerHTML = "";
+  const m = el("div", { class: "map appear overview" });
+  const ab = alertBar(); if (ab) m.appendChild(ab);
+  m.appendChild(el("p", { class: "kicker" }, "Overview"));
+  const OVR = (person && (CONTENT.overview_roles || {})[person.role]) || {};
+  m.appendChild(el("h2", {}, esc(OVR.title || CONTENT.overview_title || "The manuscript")));
+  m.appendChild(el("p", { class: "fulltitle" }, esc(CONTENT.meta.full_title)));
+  m.appendChild(el("p", { class: "lede" }, esc(OVR.lede || CONTENT.overview_lede)));
+  const files = IND_LOCKED() ? [] : (CONTENT.pack || []).filter(p => !p.lead_only || LEAD_VIEW());
+  if (files.length) { const fx = el("ul", { class: "pack overview-files" }); files.forEach(p => fx.appendChild(packItem(p))); m.appendChild(fx); }
+  const guide = person ? (CONTENT.role_guide || {})[person.role] : "";
+  if (guide) {
+    const y = el("section", { class: "yourpart", "aria-label": "Your part" });
+    y.innerHTML = `<h3>Your part${person.role === "readonly" ? "" : ", as " + esc(personFull(person))}</h3><p>${esc(guide)}</p>`;
+    m.appendChild(y);
+  }
+  m.appendChild(el("h3", {}, "How it works"));
+  const how = el("ol", { class: "howto" }); how.innerHTML = OVR.howto_html || CONTENT.howto_html; m.appendChild(how);
+  m.appendChild(el("h3", {}, "The steps"));
+  const S = state.steps[ROUTE] || {};
+  let t = "<div class='scroll'><table class='teamtable'><thead><tr><th>Part</th><th class='n'>Tasks answered</th><th>Marked</th></tr></thead><tbody>";
+  steps().forEach(s => {
+    const ids = (s.task_ids || []).filter(id => TASKS()[id]), n = ids.filter(id => taskStatus(TASKS()[id])).length;
+    t += `<tr><td><a href="#" data-n="${s.n}">${esc(s.title)}</a></td><td class="n">${ids.length ? n + " of " + ids.length : ""}</td><td>${(S[s.key] || {}).done ? "Complete" : ""}</td></tr>`;
+  });
+  const tw = el("div", {}, t + "</tbody></table></div>");
+  tw.querySelectorAll("a[data-n]").forEach(a => a.onclick = ev => { ev.preventDefault(); goStep(+a.dataset.n); });
+  m.appendChild(tw);
+  if (person && person.id && !readOnly()) {
+    const all = Object.values(TASKS()), n = all.filter(taskStatus).length;
+    const x = el("div", { class: "exportbox" });
+    x.appendChild(el("p", {}, `${all.length ? `<b>${n} of ${all.length}</b> tasks answered. ` : ""}Everything you enter here, your answers, annotations and suggested changes, is saved at Symposion as you go and is seen by ${esc(CONTENT.meta.return_to)}, so there is nothing to send. If you would like a signed copy for your own records, you can export one.`));
+    const b = el("button", { class: "btn quiet", type: "button" }, "Export a copy (JSON)");
+    b.onclick = () => exportReview(); x.appendChild(b);
+    if (state.queue.length) x.appendChild(el("p", { class: "hint" }, "Some answers have not reached Symposion yet. They are kept on this device and will be sent when the connection returns."));
+    m.appendChild(x);
+  }
+  const go = el("div", { class: "pager" });
+  const firstOpen = steps().find(s => !stepDone(ROUTE, s.key)) || steps()[0];
+  const b = el("button", { class: "btn live", type: "button" }, `Go to ${esc(firstOpen.title)}`);
+  b.onclick = () => goStep(firstOpen.n);
+  go.appendChild(b); m.appendChild(go);
+  read.appendChild(m);
+}
+
+/* ---------- the author board: shared, numbered, immutable comments, with alerts for the lead author and administrator ---------- */
+let BOARD = { loaded: false, comments: [], statuses: [], last_seen: 0, unread: 0, intact: true, checked_at: null, can_mark: false, error: null };
+const STATUS_LABEL = { acknowledged: "Acknowledged", addressed: "Addressed", not_adopted: "Not adopted", reopened: "Reopened" };
+const canPost = () => !!person && !!person.id && !readOnly() && !!cred && !IND_LOCKED();
+const ukTime = iso => new Date(iso).toLocaleString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const draftKey = () => STORE_KEY + ".draft." + (person && person.id ? person.id : "none");
+function readDraft() { try { return JSON.parse(lsGet(draftKey()) || "null") || { section: "General", item: "", body: "", reply: null }; } catch (e) { return { section: "General", item: "", body: "", reply: null }; } }
+function writeDraft(d) { lsSet(draftKey(), JSON.stringify(d)); }
+function resetBoard() { if (typeof resetChanges === "function") resetChanges(); BOARD = { loaded: false, comments: [], statuses: [], last_seen: 0, unread: 0, intact: true, checked_at: null, can_mark: false, error: null }; updateBadge(); }
+function updateBadge() {
+  const b = $("#board-badge"); if (!b) return;
+  b.hidden = !(BOARD.unread > 0); b.textContent = BOARD.unread > 0 ? String(BOARD.unread) : "";
+  b.setAttribute("aria-label", BOARD.unread + " new");
+}
+async function fetchBoard(markSeen) {
+  if (!canPost()) return false;
+  try {
+    const r = await rpc("symposion_board_list", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_mark_seen: !!markSeen });
+    const changed = !BOARD.loaded || r.comments.length !== BOARD.comments.length || r.statuses.length !== BOARD.statuses.length;
+    BOARD = { loaded: true, ...r, error: null };
+    if (markSeen) BOARD.unread_shown = r.unread, BOARD.unread = 0;
+    updateBadge();
+    return changed;
+  } catch (e) { BOARD.error = e.message; return false; }
+}
+function notifyQueued() {
+  fetch(CONFIG.supabase.url + "/functions/v1/symposion-notify", { method: "POST",
+    headers: { apikey: CONFIG.supabase.key, Authorization: "Bearer " + CONFIG.supabase.key, "Content-Type": "application/json" }, body: "{}" }).catch(() => {});
+}
+function sectionOptions() {
+  const o = [["General", ["General", "Overview", "Decisions"]]];
+  phases().forEach((p, i) => o.push([`${i + 1}. ${p.title}`, steps().filter(s => p.steps.includes(s.n)).map(s => s.title)]));
+  o.push(["Reference", ["Search strings", "Files"]]);
+  return o;
+}
+function openBoard(prefill) {
+  if (prefill && canPost()) { const d = readDraft(); Object.assign(d, prefill); writeDraft(d); }
+  state.view = "board"; save(); render(); window.scrollTo({ top: 0 });
+  setTimeout(() => { const t = document.getElementById("cm-body"); if (t && prefill) t.focus(); }, 60);
+}
+function commentOn(section) {
+  const b = el("button", { class: "small-btn", type: "button" }, "Comment on this");
+  b.onclick = () => openBoard({ section, reply: null });
+  return b;
+}
+function alertBar() {
+  if (!person || !["lead", "admin"].includes(person.role) || !(BOARD.unread > 0)) return null;
+  const a = el("div", { class: "alertbar", role: "status" });
+  a.appendChild(el("span", {}, `<b>${BOARD.unread} new ${BOARD.unread === 1 ? "comment" : "comments"}</b> on the author board since your last visit.`));
+  const b = el("button", { class: "small-btn", type: "button" }, "Open the board"); b.onclick = () => openBoard(null);
+  a.appendChild(b); return a;
+}
+function currentStatus(seq) { const l = BOARD.statuses.filter(x => x.seq === seq); return l.length ? l[l.length - 1].status : null; }
+let boardFilter = "all";
+async function renderBoard(fresh = true) {
+  const read = $("#read"); read.innerHTML = "";
+  const m = el("div", { class: "board" });
+  m.appendChild(el("p", { class: "kicker" }, "Author board"));
+  m.appendChild(el("h2", {}, "Comments from the authors"));
+  m.appendChild(el("p", { class: "lede" }, "Every author can comment here on any part of the review. Each comment is numbered, signed with the author's role and name, stamped with the time it reached Symposion, and tied to the section and item it concerns. Comments cannot be edited or withdrawn: a correction is a new comment that replies to the earlier one. New comments are sent to the lead author and the administrator, who record a response against each."));
+  if (readOnly()) { m.appendChild(el("p", { class: "hint" }, "The author board is open to signed-in authors. Read only access does not include it.")); read.appendChild(m); return; }
+  if (!canPost()) { m.appendChild(el("p", { class: "hint" }, "Choose your role and enter your passcode to read and post comments.")); read.appendChild(m); return; }
+  const info = el("p", { class: "integrity" }); m.appendChild(info);
+  const comp = el("section", { class: "composer", "aria-label": "New comment" });
+  const d = readDraft();
+  comp.innerHTML = `<h3>New comment</h3>
+    <div id="cm-reply"></div>
+    <div class="row"><div><label for="cm-section">Section or document</label><select id="cm-section"></select></div>
+    <div><label for="cm-item">Item, paragraph, line or table</label><input id="cm-item" maxlength="300" placeholder="For example: Methods, para 3; Table 1, row 4"></div></div>
+    <div style="margin-top:12px"><label for="cm-body">Comment</label><textarea id="cm-body" maxlength="4000"></textarea></div>
+    <div class="meta"><span>Posted as ${esc(personFull(person))}. Once posted, a comment cannot be changed.</span><span id="cm-count"></span></div>
+    <button class="btn live" type="button" id="cm-post">Post comment</button>`;
+  const sel = comp.querySelector("#cm-section");
+  let found = false;
+  sectionOptions().forEach(([g, items]) => { const og = el("optgroup", { label: g }); items.forEach(it => { const op = el("option", { value: it }); op.textContent = it; if (it === d.section) { op.selected = true; found = true; } og.appendChild(op); }); sel.appendChild(og); });
+  if (!found && d.section) { const op = el("option", { value: d.section }); op.textContent = d.section; op.selected = true; sel.prepend(op); }
+  const item = comp.querySelector("#cm-item"), body = comp.querySelector("#cm-body"), count = comp.querySelector("#cm-count");
+  item.value = d.item || ""; body.value = d.body || "";
+  const keep = () => { writeDraft({ section: sel.value, item: item.value, body: body.value, reply: readDraft().reply }); count.textContent = body.value.length + " of 4000"; };
+  [sel, item, body].forEach(x => x.addEventListener("input", keep)); count.textContent = body.value.length + " of 4000";
+  const rep = comp.querySelector("#cm-reply");
+  if (d.reply) { rep.className = "replying"; rep.innerHTML = `<span>Replying to comment ${d.reply}</span>`; const x = el("button", { class: "linkish", type: "button" }, "Not a reply"); x.onclick = () => { const dd = readDraft(); dd.reply = null; writeDraft(dd); renderBoard(false); }; rep.appendChild(x); }
+  comp.querySelector("#cm-post").onclick = async ev => {
+    const btn = ev.currentTarget; comp.querySelectorAll(".err").forEach(x => x.remove());
+    if (!body.value.trim()) { comp.appendChild(el("div", { class: "err", role: "alert" }, "Write the comment first.")); return; }
+    btn.disabled = true; btn.textContent = "Posting";
+    try {
+      await rpc("symposion_board_post", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_section: sel.value, p_item: item.value, p_body: body.value, p_reply_to: readDraft().reply });
+      writeDraft({ section: sel.value, item: "", body: "", reply: null });
+      notifyQueued();
+      await fetchBoard(true); renderBoard(false);
+    } catch (e) {
+      btn.disabled = false; btn.textContent = "Post comment";
+      const msg = { bad_comment: "The comment needs a section and some text, up to 4000 characters.", too_many: "Too many comments in a short time. Wait a few minutes and post again.", bad_reply: "The comment being replied to was not found." }[e.message] || MSG[e.message] || MSG.server;
+      comp.appendChild(el("div", { class: "err", role: "alert" }, esc(msg + " Your text has been kept.")));
+    }
+  };
+  m.appendChild(comp);
+  const tools = el("div", { class: "board-tools" });
+  const f = el("select", { "aria-label": "Show" });
+  [["all", "All comments"], ["open", "Awaiting response"], ["acknowledged", "Acknowledged"], ["addressed", "Addressed"], ["not_adopted", "Not adopted"]].forEach(([k, t]) => { const op = el("option", { value: k }); op.textContent = t; if (k === boardFilter) op.selected = true; f.appendChild(op); });
+  f.onchange = () => { boardFilter = f.value; renderBoard(false); };
+  tools.appendChild(f); tools.appendChild(el("span", { class: "spacer" }));
+  const rf = el("button", { class: "small-btn", type: "button" }, "Refresh"); rf.onclick = async () => { await fetchBoard(true); renderBoard(false); };
+  tools.appendChild(rf);
+  if (BOARD.can_mark) { const ex = el("button", { class: "small-btn", type: "button" }, "Download the record (CSV)"); ex.onclick = exportBoard; tools.appendChild(ex); }
+  m.appendChild(tools);
+  const list = el("ol", { class: "comments", reversed: "" }); m.appendChild(list);
+  read.appendChild(m);
+  if (fresh) { list.appendChild(el("li", { class: "hint" }, "Loading the board.")); await fetchBoard(true); if (state.view !== "board") return; list.innerHTML = ""; if (BOARD.can_mark) notifyQueued(); }
+  info.innerHTML = BOARD.error ? `<span class="bad">The board could not be reached. ${esc(MSG[BOARD.error] || MSG.offline)}</span>`
+    : (BOARD.intact ? `<span class="okk">Record intact</span><span>Every comment's SHA-512 hash was checked against the one before it at ${esc(fmtTime(BOARD.checked_at))}.</span>`
+                    : `<span class="bad">The record failed its integrity check. Tell the administrator at once.</span>`) + `<span>${BOARD.comments.length} ${BOARD.comments.length === 1 ? "comment" : "comments"}.</span>`;
+  const seenBefore = BOARD.last_seen || 0;
+  const shown = BOARD.comments.slice().reverse().filter(c => boardFilter === "all" ? true : boardFilter === "open" ? (!currentStatus(c.seq) || currentStatus(c.seq) === "reopened") : currentStatus(c.seq) === boardFilter);
+  if (!shown.length) list.appendChild(el("li", { class: "hint" }, BOARD.comments.length ? "No comments match this filter." : "No comments yet. The first comment will be number 1."));
+  shown.forEach(c => {
+    const li = el("li", { class: "cmt" + (c.seq > seenBefore && c.person_id !== person.id ? " new" : ""), id: "comment-" + c.seq });
+    const st = currentStatus(c.seq);
+    li.appendChild(el("div", { class: "ch" }, `<span class="cn">${c.seq}</span><span class="ca">${esc(c.author)}</span><span>${esc(ukTime(c.at))} UK time</span>` +
+      (c.seq > seenBefore && c.person_id !== person.id ? `<span class="newtag">NEW</span>` : "") + `<span class="pill ${st || ""}">${esc(st ? STATUS_LABEL[st] : "Awaiting response")}</span>`));
+    li.appendChild(el("p", { class: "cref" }, `<span>Section:</span> ${esc(c.section)}` + (c.item ? ` &nbsp;<span>Item:</span> ${esc(c.item)}` : "") + (c.reply_to ? ` &nbsp;<span>In reply to</span> <a href="#comment-${c.reply_to}">comment ${c.reply_to}</a>` : "")));
+    const b = el("p", { class: "cb" }); b.textContent = c.body; li.appendChild(b);
+    const hist = BOARD.statuses.filter(x => x.seq === c.seq);
+    if (hist.length) { const h = el("div", { class: "cst" }); h.innerHTML = "<ul>" + hist.map(x => `<li><b>${esc(STATUS_LABEL[x.status])}</b> by ${esc(x.by)}, ${esc(ukTime(x.at))}${x.note ? ": " + esc(x.note) : ""}</li>`).join("") + "</ul>"; li.appendChild(h); }
+    const acts = el("div", { class: "cact" });
+    const r = el("button", { class: "linkish", type: "button" }, "Reply");
+    r.onclick = () => { const dd = readDraft(); dd.reply = c.seq; dd.section = c.section; dd.item = c.item; writeDraft(dd); renderBoard(false); window.scrollTo({ top: 0, behavior: "smooth" }); setTimeout(() => { const t = document.getElementById("cm-body"); if (t) t.focus(); }, 300); };
+    acts.appendChild(r);
+    if (BOARD.can_mark) {
+      const rr = el("button", { class: "linkish", type: "button" }, "Record a response");
+      rr.onclick = () => {
+        if (li.querySelector(".respond")) return;
+        const fm = el("div", { class: "respond" });
+        fm.innerHTML = `<select aria-label="Response"><option value="acknowledged">Acknowledged</option><option value="addressed">Addressed</option><option value="not_adopted">Not adopted</option><option value="reopened">Reopened</option></select><input maxlength="1000" aria-label="Note" placeholder="Note, for example what was changed and where"><button class="btn live" type="button">Save</button>`;
+        fm.querySelector("button").onclick = async ev => {
+          ev.currentTarget.disabled = true;
+          try { await rpc("symposion_board_status", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_seq: c.seq, p_status: fm.querySelector("select").value, p_note: fm.querySelector("input").value }); await fetchBoard(true); renderBoard(false); }
+          catch (e) { ev.currentTarget.disabled = false; fm.appendChild(el("div", { class: "err", role: "alert" }, esc(MSG[e.message] || MSG.server))); }
+        };
+        li.appendChild(fm);
+      };
+      acts.appendChild(rr);
+    }
+    li.appendChild(acts); list.appendChild(li);
+  });
+}
+function exportBoard() {
+  const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+  const head = ["comment", "entered_utc", "author", "role", "person_id", "section", "item", "reply_to", "comment_text", "current_response", "response_history", "previous_hash", "sha512_hash"];
+  const rows = BOARD.comments.map(c => [c.seq, c.at_utc, c.author, c.role, c.person_id, c.section, c.item, c.reply_to ?? "", c.body, currentStatus(c.seq) ? STATUS_LABEL[currentStatus(c.seq)] : "Awaiting response",
+    BOARD.statuses.filter(x => x.seq === c.seq).map(x => `${STATUS_LABEL[x.status]} by ${x.by} at ${x.at}${x.note ? ": " + x.note : ""}`).join(" | "), c.prev_hash, c.hash].map(q).join(","));
+  const csv = "﻿" + head.join(",") + "\n" + rows.join("\n") + "\n";
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const d = new Date(); const stamp = d.toISOString().slice(0, 10);
+  const a = el("a", { href: url, download: `${CONFIG.workstream}_author_board_${stamp}.csv` }); document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+setInterval(async () => {
+  if (document.hidden || !canPost()) return;
+  const onBoard = state.view === "board";
+  const changed = await fetchBoard(onBoard);
+  if (onBoard && changed) renderBoard(false);
+  else if (!onBoard && (state.view === "map" || state.view === "walk")) {
+    const old = document.querySelector("#read .alertbar"); if (old) old.remove();
+    const ab = alertBar(); if (ab) $("#read").prepend(ab);
+  }
+}, 60000);
+document.addEventListener("visibilitychange", async () => { if (!document.hidden && canPost()) { const onBoard = state.view === "board"; const ch = await fetchBoard(onBoard); if (onBoard && ch) renderBoard(false); } });
+
+/* ---------- Suggest a change: numbered requests from the research team to the Symposion administrator ---------- */
+let CHG = { loaded: false, requests: [], statuses: [], awaiting: 0, intact: true, checked_at: null, can_mark: false, error: null };
+const CHG_STATUS = { acknowledged: "Acknowledged", applied: "Applied", not_applied: "Not applied", needs_discussion: "Needs discussion", withdrawn: "Withdrawn" };
+const CHG_SCALE = { minor: "Minor change", wholesale: "Wholesale change", none: "" };
+const CHG_MSG = {
+  bad_request: "The request needs a part concerned and some text, up to 4000 characters, with the reason no longer than 2000.",
+  too_many: "Too many requests in a short time. Wait a few minutes and send again.",
+  not_allowed: "That action is not open to your role."
+};
+function resetChanges() { CHG = { loaded: false, requests: [], statuses: [], awaiting: 0, intact: true, checked_at: null, can_mark: false, error: null }; updateChgBadge(); }
+function updateChgBadge() {
+  const b = $("#changes-badge"); if (!b) return;
+  const n = CHG.can_mark ? CHG.awaiting : 0;
+  b.hidden = !(n > 0); b.textContent = n > 0 ? String(n) : ""; b.setAttribute("aria-label", n + " awaiting action");
+}
+function updateChangeUi() {
+  const on = canPost();
+  const sb = $("#suggest-btn"), nc = $("#nav-changes");
+  if (sb) sb.hidden = !on;
+  if (nc) nc.hidden = !on;
+}
+async function fetchChanges() {
+  if (!canPost()) return false;
+  try {
+    const r = await rpc("symposion_change_list", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred });
+    const changed = !CHG.loaded || r.requests.length !== CHG.requests.length || r.statuses.length !== CHG.statuses.length;
+    CHG = { loaded: true, ...r, error: null };
+    updateChgBadge();
+    return changed;
+  } catch (e) { CHG.error = e.message; return false; }
+}
+const chgCurrent = seq => { const l = CHG.statuses.filter(x => x.seq === seq); return l.length ? l[l.length - 1] : null; };
+function suggestOn(area, item) {
+  const b = el("button", { class: "small-btn", type: "button" }, "Suggest a change");
+  b.onclick = () => openChange({ area, item: item || "" });
+  return b;
+}
+function areaOptions() {
+  return sectionOptions();
+  const o = sectionOptions();
+  o.push(["The portal itself", ["The portal itself (layout, wording or a fault)"]]);
+  return o;
+}
+function openChange(pre = {}) {
+  if (!canPost()) return;
+  const dlg = $("#change-dialog"), box = $("#change-body");
+  box.innerHTML = `<h3 id="chg-title">Suggest a change</h3>
+    <p class="dlg-note">The review is yours to shape. Say what you would like changed in the plan, the steps or this page, and the administrator will make the change and record it in the decision log. Each request is numbered, signed and time-stamped, reaches the administrator by email with the lead author copied, and you can follow what becomes of it under Changes.</p>
+    <form class="chgform" novalidate>
+      <fieldset class="kind"><legend class="sr">Type of request</legend>
+        <label><input type="radio" name="kind" value="change" checked> A change to the review or its documents</label>
+        <label><input type="radio" name="kind" value="query"> A question or a fault in the portal</label></fieldset>
+      <div><label for="chg-area">Part concerned</label><select id="chg-area"></select></div>
+      <div><label for="chg-item">Item, paragraph, line or table (optional)</label><input type="text" id="chg-item" maxlength="300" placeholder="For example: Methods, para 3; Table 1, row 4"></div>
+      <div id="chg-scale-row"><label for="chg-scale">Size of the change</label><select id="chg-scale"><option value="minor">Minor: a wording, a correction or a single detail</option><option value="wholesale">Wholesale: the question, eligibility, search or method</option></select></div>
+      <div><label for="chg-body" id="chg-body-label">What should change</label><textarea id="chg-body" maxlength="4000"></textarea></div>
+      <div><label for="chg-reason">Why (optional)</label><textarea id="chg-reason" maxlength="2000" style="min-height:70px"></textarea></div>
+      <p class="meta">Sent as ${esc(personFull(person))}. Once sent, a request cannot be changed; a correction is a new request.</p>
+      <div class="actions"><button class="btn live" type="submit">Send the request</button><button class="btn quiet" type="button" data-cancel>Cancel</button></div>
+    </form>`;
+  const sel = box.querySelector("#chg-area");
+  let found = false;
+  areaOptions().forEach(([g, items]) => { const og = el("optgroup", { label: g }); items.forEach(it => { const op = el("option", { value: it }); op.textContent = it; if (it === pre.area) { op.selected = true; found = true; } og.appendChild(op); }); sel.appendChild(og); });
+  if (pre.area && !found) { const op = el("option", { value: pre.area }); op.textContent = pre.area; op.selected = true; sel.prepend(op); }
+  box.querySelector("#chg-item").value = pre.item || "";
+  const form = box.querySelector("form");
+  const kindOf = () => form.querySelector("input[name=kind]:checked").value;
+  const syncKind = () => {
+    const q = kindOf() === "query";
+    box.querySelector("#chg-scale-row").hidden = q;
+    box.querySelector("#chg-body-label").textContent = q ? "Your question or the fault" : "What should change";
+  };
+  form.querySelectorAll("input[name=kind]").forEach(r => r.addEventListener("change", syncKind));
+  box.querySelector("[data-cancel]").onclick = () => dlg.close();
+  form.addEventListener("submit", async ev => {
+    ev.preventDefault();
+    form.querySelectorAll(".err").forEach(x => x.remove());
+    const body = box.querySelector("#chg-body").value;
+    if (!body.trim()) { form.appendChild(el("div", { class: "err", role: "alert" }, "Write what should change first.")); return; }
+    const btn = form.querySelector("button[type=submit]"); btn.disabled = true; btn.textContent = "Sending";
+    try {
+      const r = await rpc("symposion_change_post", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_kind: kindOf(),
+        p_scale: kindOf() === "query" ? "none" : box.querySelector("#chg-scale").value, p_area: sel.value, p_item: box.querySelector("#chg-item").value,
+        p_body: body, p_reason: box.querySelector("#chg-reason").value });
+      notifyQueued();
+      fetchChanges().then(() => { if (state.view === "changes") renderChanges(false); });
+      const q = r.request;
+      box.innerHTML = `<h3 id="chg-title">Request ${q.seq} recorded</h3>
+        <div class="chgdone"><p style="margin:0">${q.kind === "query" ? "Your question" : "Your change request"} was recorded at ${esc(ukTime(q.at))} UK time and signed ${esc(q.author)}. The administrator is told by email, with the lead author copied. What becomes of it will appear under Changes.</p></div>
+        <div class="actions"><button class="btn live" type="button" data-see>See all changes</button><button class="btn quiet" type="button" data-close>Close</button></div>`;
+      box.querySelector("[data-close]").onclick = () => dlg.close();
+      box.querySelector("[data-see]").onclick = () => { dlg.close(); state.view = "changes"; save(); render(); window.scrollTo({ top: 0 }); };
+    } catch (e) {
+      btn.disabled = false; btn.textContent = "Send the request";
+      form.appendChild(el("div", { class: "err", role: "alert" }, esc((CHG_MSG[e.message] || MSG[e.message] || MSG.server) + " Your text has been kept.")));
+    }
+  });
+  syncKind();
+  if (!dlg.open) dlg.showModal();
+  setTimeout(() => { const t = box.querySelector("#chg-body"); if (t) t.focus(); }, 60);
+}
+let chgFilter = "all";
+async function renderChanges(fresh = true) {
+  const read = $("#read"); read.innerHTML = "";
+  const m = el("div", { class: "board" });
+  m.appendChild(el("p", { class: "kicker" }, "Changes"));
+  m.appendChild(el("h2", {}, "Changes the team have asked for"));
+  m.appendChild(el("p", { class: "lede" }, "The review belongs to the research team, and any part of it can be changed. A request made here is numbered, signed, stamped with the time it reached Symposion and kept; it goes to the administrator by email with the lead author copied. The administrator makes the change in the protocol, the walkthroughs and the portal, records it in the decision log, and notes here what was done. If you disagree with a request, say so on the author board."));
+  if (readOnly()) { m.appendChild(el("p", { class: "hint" }, "Change requests are open to signed-in authors. Read only access does not include them.")); read.appendChild(m); return; }
+  if (!canPost()) { m.appendChild(el("p", { class: "hint" }, "Choose your role and enter your passcode to make and follow change requests.")); read.appendChild(m); return; }
+  const newBtn = el("button", { class: "btn live", type: "button" }, "Suggest a change"); newBtn.onclick = () => openChange({ area: "General" });
+  m.appendChild(el("p", {})); m.lastChild.appendChild(newBtn);
+  const info = el("p", { class: "integrity" }); m.appendChild(info);
+  const tools = el("div", { class: "board-tools" });
+  const f = el("select", { "aria-label": "Show" });
+  [["all", "All requests"], ["open", "Awaiting action"], ["applied", "Applied"], ["not_applied", "Not applied"], ["needs_discussion", "Needs discussion"], ["withdrawn", "Withdrawn"]].forEach(([k, t]) => { const op = el("option", { value: k }); op.textContent = t; if (k === chgFilter) op.selected = true; f.appendChild(op); });
+  f.onchange = () => { chgFilter = f.value; renderChanges(false); };
+  tools.appendChild(f); tools.appendChild(el("span", { class: "spacer" }));
+  const rf = el("button", { class: "small-btn", type: "button" }, "Refresh"); rf.onclick = async () => { await fetchChanges(); renderChanges(false); };
+  tools.appendChild(rf);
+  if (CHG.can_mark) { const ex = el("button", { class: "small-btn", type: "button" }, "Download the record (CSV)"); ex.onclick = exportChanges; tools.appendChild(ex); }
+  m.appendChild(tools);
+  const list = el("ol", { class: "comments", reversed: "" }); m.appendChild(list);
+  read.appendChild(m);
+  if (fresh) { list.appendChild(el("li", { class: "hint" }, "Loading.")); await fetchChanges(); if (state.view !== "changes") return; list.innerHTML = ""; if (CHG.can_mark) notifyQueued(); }
+  info.innerHTML = CHG.error ? `<span class="bad">The requests could not be loaded. ${esc(MSG[CHG.error] || MSG.offline)}</span>`
+    : (CHG.intact ? `<span class="okk">Record intact</span><span>Every request's SHA-512 hash was checked against the one before it at ${esc(fmtTime(CHG.checked_at))}.</span>`
+                  : `<span class="bad">The record failed its integrity check. Tell the administrator at once.</span>`) + `<span>${CHG.requests.length} ${CHG.requests.length === 1 ? "request" : "requests"}.</span>`;
+  const cur = c => { const s = chgCurrent(c.seq); return s ? s.status : null; };
+  const shown = CHG.requests.slice().reverse().filter(c => chgFilter === "all" ? true : chgFilter === "open" ? !cur(c) : cur(c) === chgFilter);
+  if (!shown.length) list.appendChild(el("li", { class: "hint" }, CHG.requests.length ? "No requests match this filter." : "No requests yet. The first request will be number 1."));
+  shown.forEach(c => {
+    const li = el("li", { class: "cmt", id: "change-" + c.seq });
+    const st = cur(c);
+    li.appendChild(el("div", { class: "ch" }, `<span class="cn">${c.seq}</span><span class="ca">${esc(c.author)}</span><span>${esc(ukTime(c.at))} UK time</span>` +
+      `<span class="pill kindtag">${c.kind === "query" ? "Question" : esc(CHG_SCALE[c.scale] || "Change")}</span><span class="pill ${st || ""}">${esc(st ? CHG_STATUS[st] : "Awaiting action")}</span>`));
+    li.appendChild(el("p", { class: "cref" }, `<span>Part concerned:</span> ${esc(c.area)}` + (c.item ? ` &nbsp;<span>Item:</span> ${esc(c.item)}` : "")));
+    const b = el("p", { class: "cb" }); b.textContent = c.body; li.appendChild(b);
+    if (c.reason) { const r = el("p", { class: "cb" }); r.innerHTML = "<b>Why:</b> "; r.appendChild(document.createTextNode(c.reason)); li.appendChild(r); }
+    const hist = CHG.statuses.filter(x => x.seq === c.seq);
+    if (hist.length) { const h = el("div", { class: "cst" }); h.innerHTML = "<ul>" + hist.map(x => `<li><b>${esc(CHG_STATUS[x.status])}</b>${x.decision_ref ? " (decision log " + esc(x.decision_ref) + ")" : ""} by ${esc(x.by)}, ${esc(ukTime(x.at))}${x.note ? ": " + esc(x.note) : ""}</li>`).join("") + "</ul>"; li.appendChild(h); }
+    const acts = el("div", { class: "cact" });
+    if (c.person_id === person.id && st !== "withdrawn") {
+      const w = el("button", { class: "linkish", type: "button" }, "Withdraw this request");
+      w.onclick = async () => { w.disabled = true; try { await rpc("symposion_change_status", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_seq: c.seq, p_status: "withdrawn", p_note: "", p_ref: "" }); await fetchChanges(); renderChanges(false); } catch (e) { w.disabled = false; li.appendChild(el("div", { class: "err", role: "alert" }, esc(CHG_MSG[e.message] || MSG[e.message] || MSG.server))); } };
+      acts.appendChild(w);
+    }
+    if (CHG.can_mark) {
+      const rr = el("button", { class: "linkish", type: "button" }, "Record what was done");
+      rr.onclick = () => {
+        if (li.querySelector(".respond")) return;
+        const fm = el("div", { class: "respond cr" });
+        fm.innerHTML = `<select aria-label="Outcome"><option value="acknowledged">Acknowledged</option><option value="applied">Applied</option><option value="not_applied">Not applied</option><option value="needs_discussion">Needs discussion</option></select><input maxlength="40" aria-label="Decision log entry" placeholder="Decision log entry, e.g. D51"><input maxlength="1000" aria-label="Note" placeholder="Note: what was changed and where, or why not"><button class="btn live" type="button">Save</button>`;
+        const inputs = fm.querySelectorAll("input");
+        fm.querySelector("button").onclick = async ev => {
+          ev.currentTarget.disabled = true;
+          try { await rpc("symposion_change_status", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_seq: c.seq, p_status: fm.querySelector("select").value, p_note: inputs[1].value, p_ref: inputs[0].value }); await fetchChanges(); renderChanges(false); }
+          catch (e) { ev.currentTarget.disabled = false; fm.appendChild(el("div", { class: "err", role: "alert" }, esc(CHG_MSG[e.message] || MSG[e.message] || MSG.server))); }
+        };
+        li.appendChild(fm);
+      };
+      acts.appendChild(rr);
+    }
+    li.appendChild(acts); list.appendChild(li);
+  });
+}
+function exportChanges() {
+  const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+  const head = ["request", "entered_utc", "author", "role", "person_id", "type", "size", "part_concerned", "item", "request_text", "reason", "current_outcome", "outcome_history", "previous_hash", "sha512_hash"];
+  const rows = CHG.requests.map(c => { const s = chgCurrent(c.seq); return [c.seq, c.at_utc, c.author, c.role, c.person_id, c.kind, c.scale, c.area, c.item, c.body, c.reason, s ? CHG_STATUS[s.status] : "Awaiting action",
+    CHG.statuses.filter(x => x.seq === c.seq).map(x => `${CHG_STATUS[x.status]}${x.decision_ref ? " (" + x.decision_ref + ")" : ""} by ${x.by} at ${x.at}${x.note ? ": " + x.note : ""}`).join(" | "), c.prev_hash, c.hash].map(q).join(","); });
+  const csv = "﻿" + head.join(",") + "\n" + rows.join("\n") + "\n";
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const stamp = new Date().toISOString().slice(0, 10);
+  const a = el("a", { href: url, download: `${CONFIG.workstream}_change_requests_${stamp}.csv` }); document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+setInterval(async () => {
+  if (document.hidden || !canPost()) return;
+  const on = state.view === "changes";
+  const ch = await fetchChanges();
+  if (on && ch) renderChanges(false);
+}, 90000);
+$("#suggest-btn").addEventListener("click", () => {
+  const w = state.view === "walk" && CONTENT ? steps()[state.stepIndex[state.route]] : null;
+  openChange({ area: w ? w.title : "General" });
+});
+
+/* ---------- tasks: each answer is saved as it is given, against the task, under the person who gave it ---------- */
+const recordsFor = s => (s.task_ids || []).map(id => TASKS()[id]).filter(t => t && t.kind !== "view" && t.kind !== "review");
+const ROLE_NOUN = { lead: "the lead reviewer", second: "the second reviewers", cosupervisor: "the co-supervisors", senior: "the senior author", admin: "the administrator" };
+const whoRecords = ts => { const r = [...new Set(ts.flatMap(t => t.for || []))].filter(k => k !== "admin" && k !== "senior"); return r.length ? r.map(k => ROLE_NOUN[k] || k).join(" and ") : "every author"; };
+const LEAD_VIEW = () => !!person && (person.role === "lead" || person.role === "admin" || person.role === "senior");
+const TASKS = () => { const all = CONTENT.tasks || {}, out = {}, adm = !!person && person.role === "admin"; Object.keys(all).forEach(k => { const t = all[k]; if ((!t.lead_only || LEAD_VIEW()) && (adm || IND() || !t.reviewer_only) && (adm || !(t.for || []).length || (!!person && t.for.includes(person.role)))) out[k] = t; }); return out; };
+const taskRec = id => (state.steps[ROUTE] || {})[id] || { values: {} };
+const KIND = { review: "Your view", view: "Your view", query: "Item to confirm", decision: "Decision", record: "To record", check: "Check", group: "Decision", code: "Independent coding" };
+function taskStatus(t) {
+  const v = taskRec(t.id).values || {};
+  const has = k => String(v[k] ?? "").trim() !== "";
+  if (t.kind === "review" || t.kind === "view") return has("verdict");
+  if (t.kind === "record") return has("value");
+  if (t.kind === "decision") return has("decision") && (v.decision !== t.fields[0].options[t.fields[0].options.length - 1] || has("reason"));
+  if (t.kind === "check") return has("finding") && (v.finding === t.fields[0].options[0] || has("text"));
+  if (t.kind === "group") return has("decision") && (v.decision === t.fields[0].options[0] || has("exceptions"));
+  if (t.kind === "code") { const nil = ["Not described", "Not reported"]; const codeOk = !t.fields.some(f => f.key === "code") || has("code");
+    return codeOk && has("role") && ((nil.includes(v.role) && (!v.code || v.code === "Not described")) || has("evidence")); }
+  return t.fields.filter(f => f.type !== "textarea" && f.key !== "note").every(f => has(f.key)) || (t.fields.every(f => f.type === "textarea") && t.fields.some(f => has(f.key)));
+}
+function setValue(t, key, value) {
+  const all = state.steps[ROUTE];
+  const cur = all[t.id] || { values: {} };
+  cur.values = cur.values || {};
+  if (cur.values[key] === value) return;
+  cur.values[key] = value; all[t.id] = cur; save();
+  queueEvent(t.id, "recorded", { [key]: value });
+}
+function taskCard(t, opts = {}) {
+  const v = taskRec(t.id).values || {};
+  const ro = readOnly() || !person || !person.id;
+  const c = el("section", { class: "task" + (taskStatus(t) ? " answered" : ""), id: "task-" + t.id, "aria-label": t.title || t.id });
+  const stat = () => taskStatus(t) ? "Answered" : "Not yet answered";
+  let head = `<span class="tstat">${stat()}</span><p class="tk">${esc(KIND[t.kind] || "")}</p>`;
+  if (t.study) {
+    const st = t.study, links = [st.doi ? `<a href="https://doi.org/${esc(st.doi)}" target="_blank" rel="noopener">DOI</a>` : "",
+      st.pmid ? `<a href="https://pubmed.ncbi.nlm.nih.gov/${esc(st.pmid)}/" target="_blank" rel="noopener">PubMed</a>` : ""].filter(Boolean).join(", ");
+    head += `<h4>Study ${st.study_id}: ${esc(st.author.split(",")[0])} ${esc(st.year)}${t.field_label ? ", " + esc(t.field_label.toLowerCase()) : ""}</h4>`;
+    head += `<p class="ctx">${esc(st.title || "")}${links ? " " + links : ""}</p>`;
+  } else if (!opts.bare && !(t.kind === "record" && t.fields.length === 1 && t.fields[0].label === t.title)) head += `<h4>${esc(t.title)}</h4>`;
+  c.innerHTML = head;
+  if (t.context) c.appendChild(el("p", { class: "ctx" }, esc(t.context)));
+  if (t.kind === "code") c.appendChild(el("dl", { class: "codemeta" }, `<dt>Type</dt><dd>${esc(t.study_type)}</dd><dt>Full text</dt><dd><code>${esc(t.file)}</code> in the shared folder</dd>` +
+    (t.link ? `<dt>Online</dt><dd><a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.link)}</a></dd>` : "")));
+  if (t.studies && t.studies.length) {   // one decision covering several studies, each with its current code and links
+    const ul = el("ul", { class: "grp" });
+    t.studies.forEach(st => {
+      const links = [st.doi ? `<a href="https://doi.org/${esc(st.doi)}" target="_blank" rel="noopener">DOI</a>` : "",
+        st.pmid ? `<a href="https://pubmed.ncbi.nlm.nih.gov/${esc(st.pmid)}/" target="_blank" rel="noopener">PubMed</a>` : ""].filter(Boolean).join(", ");
+      ul.appendChild(el("li", {}, `<strong>Study ${esc(String(st.study_id))}: ${esc(st.author)} ${esc(st.year)}</strong>${st.note ? ". " + esc(st.note) : ""}${links ? " (" + links + ")" : ""}`));
+    });
+    c.appendChild(ul);
+  }
+  if (t.kind === "decision" && t.source_value !== undefined) c.appendChild(el("dl", {}, `<dt>As charted</dt><dd>${esc(t.charted || "(blank)")}</dd><dt>At source</dt><dd>${esc(t.source_value)}</dd>${t.evidence ? `<dt>Basis</dt><dd>${esc(t.evidence)}</dd>` : ""}`));
+  if (t.kind === "check") c.appendChild(el("dl", {}, `<dt>As charted</dt><dd>${esc(t.charted || "(blank)")}</dd><dt>Why it is here</dt><dd>Only the abstract could be checked, and an abstract cannot confirm that rehabilitation is absent from the paper.</dd>`));
+  t.fields.forEach(f => {
+    const id = "t-" + t.id + "-" + f.key;
+    if (f.type === "choice") {
+      const fs = el("fieldset"); fs.appendChild(el("legend", {}, esc(f.label)));
+      f.options.forEach((o, i) => {
+        const lab = el("label", { class: "opt" });
+        const r = el("input", { type: "radio", name: id, value: o, id: id + "-" + i });
+        if (v[f.key] === o) r.checked = true;
+        if (ro) r.disabled = true;
+        r.addEventListener("change", () => { setValue(t, f.key, o); refreshCard(c, t); });
+        lab.appendChild(r); lab.appendChild(el("span", {}, esc(o))); fs.appendChild(lab);
+      });
+      c.appendChild(fs);
+    } else {
+      const w = el("div", { class: "field" });
+      w.appendChild(el("label", { for: id }, esc(f.label)));
+      const inp = f.type === "textarea" ? el("textarea", { id, maxlength: "3500" })
+        : el("input", { id, type: f.type === "date" ? "date" : f.type === "number" ? "number" : "text", step: "any", maxlength: "300" });
+      inp.value = v[f.key] ?? "";
+      if (ro) inp.disabled = true;
+      inp.addEventListener("change", () => { setValue(t, f.key, inp.value); refreshCard(c, t); });
+      let typing = null;
+      inp.addEventListener("input", () => { clearTimeout(typing); typing = setTimeout(() => { setValue(t, f.key, inp.value); refreshCard(c, t); }, 1200); });
+      w.appendChild(inp);
+      if (f.type === "textarea") {   // visible limit, so a long paste is never cut off unnoticed (28 October 2026)
+        const cnt = el("div", { class: "charcount" }); const upd = () => { cnt.textContent = `${inp.value.length.toLocaleString("en-GB")} of 3,500 characters`; cnt.classList.toggle("full", inp.value.length >= 3500); };
+        inp.addEventListener("input", upd); upd(); w.appendChild(cnt);
+      }
+      c.appendChild(w);
+    }
+  });
+  if (canPost() && t.kind !== "review" && t.kind !== "view") { const co = el("div", { class: "comment-on" }); co.appendChild(commentOn(t.study ? `Study ${t.study.study_id}: ${t.study.author.split(",")[0]} ${t.study.year}` : t.title)); c.appendChild(co); }
+  return c;
+}
+function refreshSetProgress() { const h = document.getElementById("set-progress"); if (!h) return; const ids = (h.dataset.ids || "").split(" ").filter(Boolean), list = ids.map(id => TASKS()[id]).filter(Boolean); h.textContent = `${list.filter(taskStatus).length} of ${list.length} answered. Each answer is saved as you give it; you can return to any of them.`; }
+function refreshCard(c, t) { refreshSetProgress(); c.classList.toggle("answered", taskStatus(t)); const s = c.querySelector(".tstat"); if (s) s.textContent = taskStatus(t) ? "Answered" : "Not yet answered"; renderPhases(); updateTally(); }
+function updateTally() {
+  const all = Object.values(TASKS()), n = all.filter(taskStatus).length;
+  const t = $("#tally"); if (t) t.innerHTML = `<strong>${n} of ${all.length}</strong> tasks answered.`;
+}
+/* ---------- page view: the section on the Word pages, decrypted page by page as they come into view ---------- */
+const PV = () => (CONTENT && CONTENT.pageview) || null;
+const PV_WIDE = window.matchMedia("(min-width: 760px)");
+const pvMode = () => state.open.pv || "page";
+const pageViewOn = s => s.kind === "section" && !!PV() && !!PV().sections[s.section_key] && PV_WIDE.matches && pvMode() === "page";
+PV_WIDE.addEventListener("change", () => { if (CONTENT && state.view === "walk") renderWalk(); });
+function viewSwitch() {
+  const bar = el("div", { class: "pv-switch", role: "group", "aria-label": "Show the section as" });
+  [["page", "Word pages"], ["text", "Text"]].forEach(([k, lab]) => {
+    const b = el("button", { type: "button", "aria-pressed": String(pvMode() === k) }, lab);
+    b.onclick = () => { state.open.pv = k; save(); renderWalk(); };
+    bar.appendChild(b);
+  });
+  return bar;
+}
+const pageCache = new Map();
+function pageURL(pg) {
+  if (!pageCache.has(pg.enc)) pageCache.set(pg.enc, (async () => {
+    const r = await fetch(pg.enc, { cache: "force-cache" });
+    if (!r.ok) throw new Error("page");
+    const plain = await decryptBytes(KEY, pg.iv, new Uint8Array(await r.arrayBuffer()));
+    return URL.createObjectURL(new Blob([plain], { type: "image/webp" }));
+  })().catch(e => { pageCache.delete(pg.enc); throw e; }));
+  return pageCache.get(pg.enc);
+}
+const pageObserver = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return; pageObserver.unobserve(e.target); e.target._show();
+}), { rootMargin: "900px 0px" }) : null;
+function pageBox(pg, n, withText) {
+  const box = el("div", { class: "pv-page", style: `aspect-ratio:${pg.w} / ${pg.h}`, "data-page": String(n) });
+  const wait = el("div", { class: "pv-wait" }, "Page " + n);
+  const img = el("img", { alt: "Page " + n, decoding: "async", draggable: "false" });
+  box.appendChild(wait); box.appendChild(img);
+  let tl = null;
+  if (withText && pg.lines) {
+    tl = el("div", { class: "pv-text" });
+    pg.lines.forEach(([x, y, w, h, t, sz]) => {
+      const sp = el("span"); sp.textContent = t;
+      sp.style.cssText = `left:${x / pg.w * 100}%;top:${y / pg.h * 100}%;font-size:${sz / pg.w * 100}cqw;height:${h / pg.h * 100}%`;
+      sp.dataset.w = w / pg.w; tl.appendChild(sp);
+    });
+    box.appendChild(tl);
+  }
+  box._show = () => {
+    pageURL(pg).then(u => { img.src = u; img.onload = () => wait.remove(); }).catch(() => { wait.textContent = "This page could not be loaded. Reload to try again."; });
+    if (tl) requestAnimationFrame(() => {
+      const W = box.clientWidth; if (!W) return;
+      tl.querySelectorAll("span").forEach(sp => { const nat = sp.getBoundingClientRect().width; if (nat > 0) sp.style.transform = `scaleX(${(+sp.dataset.w * W) / nat})`; });
+    });
+  };
+  if (pageObserver) pageObserver.observe(box); else box._show();
+  return box;
+}
+function pageView(s) {
+  const V = PV(), sec = V.sections[s.section_key], [c0, c1] = V.column;
+  const doc = el("div", { class: "pv-doc", role: "region", "aria-label": s.title + ", as laid out in the Word file" });
+  const anchors = Object.keys(V.para).filter(a => a.slice(0, a.lastIndexOf("-")) === s.section_key);
+  const noted = new Set((BOARD.comments || []).filter(c => c.section === s.title).map(c => String(c.item || "").replace(/\D/g, "")));
+  for (let pn = sec.from[0]; pn <= sec.to[0]; pn++) {
+    const pg = V.pages[pn], box = pageBox(pg, pn + 1, true);
+    const top = pn === sec.from[0] ? sec.from[1] : 0, bot = pn === sec.to[0] ? sec.to[1] : pg.h;
+    if (top > pg.h * 0.07) box.appendChild(el("div", { class: "pv-dim", style: `top:0;height:${top / pg.h * 100}%` }));
+    if (bot < pg.h * 0.93) box.appendChild(el("div", { class: "pv-dim", style: `top:${bot / pg.h * 100}%;bottom:0` }));
+    const here = [];
+    anchors.forEach(a => V.para[a].forEach((b, k) => {
+      if (b.page !== pn) return;
+      const n = a.slice(a.lastIndexOf("-") + 1);
+      const r = el("div", { class: "pv-para", style: `left:${(c0 - 7) / pg.w * 100}%;width:${(c1 - c0 + 9) / pg.w * 100}%;top:${(b.y0 - 2) / pg.h * 100}%;height:${(b.y1 - b.y0 + 4) / pg.h * 100}%` });
+      box.appendChild(r);
+      let btn = null;
+      if (canPost() && V.para[a][0].page === pn && k === 0) {
+        btn = el("button", { class: "pv-note" + (noted.has(n) ? " noted" : ""), type: "button", "aria-label": "Annotate paragraph " + n, title: "Paragraph " + n,
+                             style: `top:${b.y0 / pg.h * 100}%` }, "Annotate");
+        btn.onclick = () => openBoard({ section: s.title, item: "Paragraph " + n, reply: null });
+        btn.onfocus = () => r.classList.add("hot"); btn.onblur = () => r.classList.remove("hot");
+        box.appendChild(btn);
+      }
+      here.push({ b, r, btn, a });
+    }));
+    let cur = null;
+    const pick = y => here.find(h => y >= h.b.y0 - 4 && y <= h.b.y1 + 4) || null;
+    box.addEventListener("mousemove", e => {
+      const rect = box.getBoundingClientRect(), y = (e.clientY - rect.top) / rect.height * pg.h;
+      const h = pick(y);
+      if (h === cur) return;
+      if (cur) { cur.r.classList.remove("hot"); here.filter(x => x.a === cur.a).forEach(x => x.r.classList.remove("hot")); const fb = here.find(x => x.a === cur.a && x.btn); if (fb) fb.btn.classList.remove("on"); }
+      cur = h;
+      if (h) { here.filter(x => x.a === h.a).forEach(x => x.r.classList.add("hot")); const fb = here.find(x => x.a === h.a && x.btn); if (fb) fb.btn.classList.add("on"); }
+    });
+    box.addEventListener("mouseleave", () => { here.forEach(x => { x.r.classList.remove("hot"); if (x.btn) x.btn.classList.remove("on"); }); cur = null; });
+    doc.appendChild(box);
+  }
+  return doc;
+}
+function previewPanel(p) {
+  const pages = p.preview === "ms" ? (PV() ? PV().pages : []) : (p.preview || []);
+  const panel = el("div", { class: "pv-preview", role: "region", "aria-label": "Preview of " + p.file });
+  pages.forEach((pg, i) => panel.appendChild(pageBox(pg, i + 1, false)));
+  return panel;
+}
+function renderBody(s) {
+  const wrap = el("div", { class: "appear ms" });
+  if (s.kind === "tasks") {
+    if (s.intro) wrap.appendChild(el("p", { class: "lede" }, s.intro));
+    if (!LEAD_VIEW() && s.audience !== "reviewer") { wrap.appendChild(el("p", { class: "lede" }, "These tasks are assigned to the lead reviewer.")); return wrap; }
+    const list = s.task_ids.map(id => TASKS()[id]).filter(Boolean);
+    const filt = state.open.filter || "all";
+    const bar = el("div", { class: "taskfilter", role: "group", "aria-label": "Show" });
+    [["all", "All"], ["open", "Not yet answered"], ["done", "Answered"]].forEach(([k, lab]) => {
+      const b = el("button", { type: "button", "aria-pressed": String(filt === k) }, lab);
+      b.onclick = () => { state.open.filter = k; save(); renderWalk(); };
+      bar.appendChild(b);
+    });
+    wrap.appendChild(bar);
+    let group = null;
+    list.filter(t => filt === "all" || (filt === "done") === taskStatus(t)).forEach(t => {
+      if (t.field_label && t.field_label !== group) { group = t.field_label; wrap.appendChild(el("h3", { class: "sub" }, esc(group))); }
+      wrap.appendChild(taskCard(t));
+    });
+    return wrap;
+  }
+  const recs = recordsFor(s);
+  if (s.kind === "step") {
+    const sheet = el("div", { class: "sheet guide" }); sheet.innerHTML = s.html; wrap.appendChild(sheet);
+    const noted = new Set((BOARD.comments || []).filter(c => c.section === s.title).map(c => String(c.item || "").replace(/\D/g, "")));
+    wrap.querySelectorAll(".para").forEach(p => {
+      if (noted.has(p.dataset.n)) p.classList.add("noted");
+      const b = p.querySelector(".pnote"); if (!b) return;
+      if (!canPost()) { b.remove(); return; }
+      b.onclick = () => openBoard({ section: s.title, item: "Paragraph " + p.dataset.n, reply: null });
+    });
+    const all = (s.task_ids || []).map(id => (CONTENT.tasks || {})[id]).filter(t => t && t.kind !== "view");
+    if (all.length) {
+      const q = el("div", { class: "queries records" });
+      q.appendChild(el("h3", { class: "sub" }, "To record for this step"));
+      if (recs.length) recs.forEach(t => q.appendChild(taskCard(t)));
+      else q.appendChild(el("p", { class: "ctx" }, `Recorded here by ${esc(whoRecords(all))}.`));
+      wrap.appendChild(q);
+    }
+    return wrap;
+  }
+  const qs = (s.task_ids || []).map(id => TASKS()[id]).filter(t => t && t.kind === "query");
+  if (qs.length) {
+    const q = el("div", { class: "queries" });
+    q.appendChild(el("h3", { class: "sub" }, qs.length === 1 ? "A query for the lead reviewer in this section" : `${["", "One", "Two", "Three", "Four", "Five", "Six"][qs.length] || qs.length} queries for the lead reviewer in this section`));
+    q.appendChild(el("p", { class: "ctx" }, "They match the highlighted notes in the text. Answer here; Dr Hall places the answers in the Word file."));
+    qs.forEach(t => q.appendChild(taskCard(t)));
+    wrap.appendChild(q);
+    wrap.appendChild(el("h3", { class: "sub" }, "The section"));
+  }
+  if (PV() && PV().sections[s.section_key]) wrap.appendChild(viewSwitch());
+  if (pageViewOn(s)) { wrap.appendChild(pageView(s)); return wrap; }
+  const sheet = el("div", { class: "sheet" }); sheet.innerHTML = s.html; wrap.appendChild(sheet);
+  const noted = new Set((BOARD.comments || []).filter(c => c.section === s.title).map(c => String(c.item || "").replace(/\D/g, "")));
+  wrap.querySelectorAll(".para").forEach(p => {
+    if (noted.has(p.dataset.n)) p.classList.add("noted");
+    const b = p.querySelector(".pnote");
+    if (!b) return;
+    if (!canPost()) { b.remove(); return; }
+    b.onclick = () => openBoard({ section: s.title, item: "Paragraph " + p.dataset.n, reply: null });
+  });
+  return wrap;
+}
+function renderLedger(s) {
+  const led = $("#ledger");
+  const rec = state.steps[ROUTE][s.key] || { values: {} };
+  led.className = "ledger" + (rec.done ? " done" : "");
+  led.innerHTML = s.kind === "tasks" ? "<h4>Progress</h4>" : (s.kind === "step" ? "<h4>This step</h4>" : "<h4>This section</h4>");
+  const ro = readOnly();
+  if (s.kind === "tasks") {
+    const list = s.task_ids.map(id => TASKS()[id]).filter(Boolean), n = list.filter(taskStatus).length;
+    led.appendChild(el("p", { class: "hint", id: "set-progress", "data-ids": list.map(t => t.id).join(" ") }, `${n} of ${list.length} answered. Each answer is saved as you give it; you can return to any of them.`));
+  } else {
+    led.appendChild(el("p", { class: "hint" }, ro ? "Read only: nothing can be entered or saved." : (s.kind === "step" ? "Each answer saves to your own record as you give it. To comment on a paragraph of the guidance, use Annotate beside it; to change the plan, use Suggest a change." : "Each answer saves to your own record as you give it. To comment on a single paragraph, use Annotate beside it (on the Word pages, it appears in the margin as you point at the paragraph).")));
+    (s.task_ids || []).filter(id => TASKS()[id] && (TASKS()[id].kind === "review" || TASKS()[id].kind === "view")).forEach(id => led.appendChild(taskCard(TASKS()[id], { bare: true })));
+  }
+  const acts = el("div", { class: "actions" });
+  const b = el("button", { class: rec.done ? "btn quiet" : "btn live", type: "button" }, rec.done ? "Reopen" : (s.kind === "tasks" ? "Mark this set complete" : s.kind === "step" ? "Mark step complete" : "Mark section reviewed"));
+  b.onclick = () => {
+    const cur = state.steps[ROUTE][s.key] || { values: {} };
+    cur.done = !cur.done; cur.at = new Date().toISOString(); state.steps[ROUTE][s.key] = cur; save();
+    queueEvent(s.key, cur.done ? "completed" : "reopened", {});
+    if (cur.done && (state.stepIndex[ROUTE] || 0) < steps().length - 1) state.stepIndex[ROUTE]++;
+    save(); renderWalk();
+  };
+  if (ro) b.disabled = true;
+  acts.appendChild(b); led.appendChild(acts);
+  if (rec.done && rec.at) led.appendChild(el("p", { class: "stamp" }, "Marked " + fmtTime(rec.at) + "."));
+}
+
+/* ---------- export: everything this person has entered, as one signed JSON file to send to the senior author ---------- */
+async function sha512hex(text) {
+  const h = await crypto.subtle.digest("SHA-512", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(h), b => b.toString(16).padStart(2, "0")).join("");
+}
+function download(name, text, type) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = el("a", { href: url, download: name }); document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+function responsesFor(stepsState) {
+  const S = stepsState[ROUTE] || {};
+  const tasks = Object.values(TASKS()).map(t => ({ id: t.id, kind: t.kind, section: t.section, title: t.title || null,
+    study: t.study || null, field: t.field || null, answered: taskStatus.call(null, t),
+    response: (S[t.id] || {}).values || {} }));
+  const sections = steps().map(s => ({ key: s.key, title: s.title, marked: !!(S[s.key] || {}).done, marked_at: (S[s.key] || {}).at || null }));
+  return { sections, tasks };
+}
+async function exportReview() {
+  if (canPost()) { await fetchBoard(false); await fetchChanges(); }
+  const mine = c => person && c.person_id === person.id;
+  const body = {
+    format: "symposion-manuscript-review/1", workstream: CONFIG.workstream, page_version: CONFIG.version,
+    manuscript: { file: CONTENT.meta.ms_file, label: CONTENT.meta.ms_label, sha512: CONTENT.meta.ms_sha512 },
+    task_register_sha512: CONTENT.meta.tasks_sha512, exported_utc: new Date().toISOString(),
+    person: person ? { id: person.id || null, role: person.role, role_title: roleDef(person.role).title, name: personName(person) } : null,
+    unsaved_changes: state.queue.length, refused_changes: (state.refused || []).length,
+    ...responsesFor(state.steps),
+    annotations: (BOARD.comments || []).filter(mine).map(c => ({ number: c.seq, entered_utc: c.at_utc, section: c.section, item: c.item, reply_to: c.reply_to ?? null, text: c.body,
+      current_response: currentStatus(c.seq) || null, sha512: c.hash })),
+    replies_to_my_annotations: (BOARD.comments || []).filter(c => !mine(c) && (BOARD.comments || []).some(m => mine(m) && m.seq === c.reply_to)).map(c => ({ number: c.seq, author: c.author, reply_to: c.reply_to, text: c.body, sha512: c.hash })),
+    suggested_changes: (CHG.requests || []).filter(mine).map(r => ({ number: r.seq, entered_utc: r.at_utc, kind: r.kind, area: r.area, item: r.item, text: r.body, reason: r.reason, sha512: r.hash })),
+    author_board_chain_intact: BOARD.loaded ? !!BOARD.intact : null
+  };
+  body.answered = body.tasks.filter(t => t.answered).length;
+  const text = JSON.stringify(body, null, 1);
+  const sig = await sha512hex(text);
+  const out = JSON.stringify({ ...body, export_sha512: sig }, null, 1);
+  const who = (personName(person || {}) || roleDef((person || {}).role).title || "review").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+  download(`${CONFIG.workstream}_review_${who}_${new Date().toISOString().slice(0, 10)}.json`, out + "\n", "application/json");
+}
+
+function renderSearch() {
+  const read = $("#read"); read.innerHTML = "";
+  read.appendChild(el("p", { class: "kicker" }, "Reference"));
+  read.appendChild(el("h2", {}, "Search strings"));
+  read.appendChild(el("p", {}, CONTENT.search_intro_html));
+  CONTENT.strategies.forEach(d => {
+    const box = el("section", { class: "db" });
+    const head = el("header");
+    head.appendChild(el("div", {}, `<h3>${d.db}</h3><div class="plat">${d.platform}</div>`));
+    const c = el("button", { class: "copy", type: "button" }, "Copy");
+    c.onclick = async () => { try { await navigator.clipboard.writeText(d.lines.join("\n")); c.textContent = "Copied"; setTimeout(() => c.textContent = "Copy", 1800); } catch (e) { c.textContent = "Select and copy manually"; } };
+    const hb = el("div", { style: "display:flex;gap:8px;flex-wrap:wrap;flex:0 0 auto" }); hb.appendChild(c);
+    if (canPost()) { hb.appendChild(commentOn("Search strings: " + d.db)); hb.appendChild(suggestOn("Search strings: " + d.db)); }
+    head.appendChild(hb); box.appendChild(head);
+    box.appendChild(el("p", { class: "note" + (/Not tested/.test(d.note) ? " untested" : "") }, d.note));
+    if (d.lines.length === 1) { const pre = el("pre"); pre.textContent = d.lines[0]; box.appendChild(pre); }
+    else { const ol = el("ol"); d.lines.forEach(l => { const li = el("li"); li.textContent = l; ol.appendChild(li); }); box.appendChild(ol); }
+    read.appendChild(box);
+  });
+  read.appendChild(el("h3", {}, "Test record"));
+  read.appendChild(el("p", {}, CONTENT.test_record));
+}
+
+function packItem(p) {
+  const li = el("li");
+  li.appendChild(el("div", {}, `<div class="name">${esc(p.label)}</div><div class="desc">${esc(p.desc)}</div><div class="meta">${esc(p.file)} &nbsp; ${esc(p.size)}</div>`));
+  const isDoc = /\.docx$/i.test(p.file);
+  const WORDICO = '<svg class="wordico" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="4" fill="#185ABD"/><text x="14" y="20.5" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="17" fill="#fff">W</text></svg>';
+  const b = el("button", { class: isDoc ? "dl-word" : "btn live", type: "button" }, isDoc ? WORDICO + "<span>Download the Word document</span>" : "Download");
+  const setB = t => { if (isDoc) b.querySelector("span").textContent = t; else b.textContent = t; };
+  b.onclick = async () => {
+    b.disabled = true; setB("Preparing");
+    try {
+      const r = await fetch(p.enc, { cache: "no-store" }); const buf = new Uint8Array(await r.arrayBuffer());
+      const plain = await decryptBytes(KEY, p.iv, buf);
+      const url = URL.createObjectURL(new Blob([plain], { type: p.mime }));
+      const a = el("a", { href: url, download: p.file }); document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      setB("Downloaded, open it in Word");
+    } catch (e) { setB("Download failed, try again"); }
+    b.disabled = false;
+  };
+  const bw = el("div", { style: "display:flex;gap:10px;flex-wrap:wrap;align-items:center" }); bw.appendChild(b);
+  if (p.preview && (p.preview !== "ms" || PV())) {
+    const pb = el("button", { class: "btn quiet pv-prevbtn", type: "button", "aria-expanded": "false" }, "Preview");
+    let panel = null;
+    pb.onclick = () => {
+      if (panel) { panel.remove(); panel = null; pb.textContent = "Preview"; pb.setAttribute("aria-expanded", "false"); return; }
+      panel = previewPanel(p); li.appendChild(panel); pb.textContent = "Close preview"; pb.setAttribute("aria-expanded", "true");
+    };
+    bw.appendChild(pb);
+  }
+  li.appendChild(bw);
+  return li;
+}
+function renderPack() {
+  const read = $("#read"); read.innerHTML = "";
+  read.appendChild(el("p", { class: "kicker" }, "Files"));
+  read.appendChild(el("h2", {}, "Documents for the reconstruction"));
+  const ul = el("ul", { class: "pack" });
+  (CONTENT.pack || []).filter(p => !p.lead_only || LEAD_VIEW()).forEach(p => ul.appendChild(packItem(p)));
+  read.appendChild(ul);
+}
+
+function renderDecisions() {
+  const read = $("#read"); read.innerHTML = "";
+  read.appendChild(el("p", { class: "kicker" }, "Decisions"));
+  read.appendChild(el("h2", {}, "Decisions behind this plan"));
+  if (canPost()) { const co = el("div", { class: "comment-on" }); co.appendChild(commentOn("Decisions")); co.appendChild(suggestOn("Decisions")); read.appendChild(co); }
+  read.appendChild(el("div", { class: "log" }, CONTENT.decisions_html));
+}
+
+/* ---------- progress: saved at Symposion against the person, with a copy kept on this device ---------- */
+function queueEvent(step_key, event, recorded) {
+  if (!person || !person.id || readOnly()) return;
+  state.queue.push({ route: state.route, step_key, event, recorded: recorded || {}, local_at: new Date().toISOString() });
+  save(); updateSync(); flush();
+}
+let flushing = false;
+async function flush() {
+  if (flushing || !person || !person.id || !cred || !state.queue.length) return;
+  flushing = true;
+  const who = person.id;
+  try {
+    while (state.queue.length && person && person.id === who) {
+      const q = state.queue[0];
+      try {
+        await rpc("symposion_save", { p_slug: CONFIG.workstream, p_person: who, p_route: q.route, p_step_key: q.step_key, p_event: q.event,
+          p_recorded: q.recorded, p_client_ref: clientRef(), p_page_version: CONFIG.version, p_pass: cred });
+      } catch (e) {
+        if (!person || person.id !== who) break;
+        if (e.message === "bad_event") { state.refused = (state.refused || []).concat([q]); state.queue.shift(); save(); continue; }
+        if (e.message === "person_gone") { personGone(); return; }
+        break;
+      }
+      if (!person || person.id !== who) break;
+      state.queue.shift(); state.lastSync = new Date().toISOString(); save();
+    }
+  } finally { flushing = false; updateSync(); }
+  if (state.queue.length && person) setTimeout(flush, 30000);
+}
+function updateSync() {
+  const box = $("#sync"), t = $("#sync-text");
+  if (!person || readOnly()) { box.className = "sync"; t.textContent = readOnly() ? "Nothing is saved in read only" : ""; return; }
+  const oldest = state.queue.length ? Date.now() - new Date(state.queue[0].local_at).getTime() : 0;
+  if ((state.refused || []).length) { box.className = "sync warn"; t.textContent = `${state.refused.length} ${state.refused.length === 1 ? "change was" : "changes were"} refused by Symposion and kept on this device: please tell the administrator`; }
+  else if (state.queue.length && oldest > 60000) { box.className = "sync warn"; t.textContent = `${state.queue.length} ${state.queue.length === 1 ? "change has" : "changes have"} not reached Symposion yet; kept on this device and retried`; }
+  else if (state.queue.length) { box.className = "sync pending"; t.textContent = state.queue.length === 1 ? "1 change waiting to save" : state.queue.length + " changes waiting to save"; }
+  else if (state.lastSync) { box.className = "sync ok"; t.textContent = "Progress saved " + fmtTime(state.lastSync); }
+  else { box.className = "sync"; t.textContent = "Nothing to save yet"; }
+}
+window.addEventListener("online", flush);
+document.addEventListener("visibilitychange", () => { if (document.hidden) { document.querySelectorAll("#read textarea, #read input[type=text], #read input[type=number], #read input[type=date], #ledger input[type=text], #ledger input[type=number], #ledger textarea").forEach(i => i.dispatchEvent(new Event("change"))); flush(); } });
+setInterval(() => { updateSync(); if (state.queue.length) flush(); }, 20000);
+
+/* ---------- administrator: team progress, passcode resets and registrations ---------- */
+function foldPerson(events) {
+  const steps = { [ROUTE]: {} };
+  events.slice().sort((a, b) => a.created_at < b.created_at ? -1 : 1).forEach(e => applyEvent(steps, e.route, e.step_key, e.event, e.recorded, e.created_at));
+  return steps;
+}
+const fmtDay = iso => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short" });
+
+async function renderTeam() {
+  const read = $("#read"); read.innerHTML = "";
+  read.classList.add("team");
+  read.appendChild(el("p", { class: "kicker" }, "Administrator"));
+  read.appendChild(el("h2", {}, "Team progress"));
+  const status = el("p", { class: "hint" }, "Loading"); read.appendChild(status);
+  let data;
+  try { data = await rpc("symposion_admin_overview", { p_slug: CONFIG.workstream, p_pass: cred }); }
+  catch (e) { status.textContent = MSG[e.message] || MSG.server; return; }
+  if (state.view !== "team") return;
+  const refresh = el("button", { class: "btn quiet", type: "button" }, "Refresh");
+  refresh.onclick = () => renderTeam();
+  status.replaceWith(refresh);
+
+  const live = data.people.filter(p => !p.removed_at), gone = data.people.filter(p => p.removed_at);
+  const by = {};
+  data.events.forEach(e => (by[e.person_id] = by[e.person_id] || []).push(e));
+  const folded = {}; live.forEach(p => folded[p.id] = foldPerson(by[p.id] || []));
+  const total = r => CONTENT.routes[r].steps.length;
+  const count = (p, r) => CONTENT.routes[r].steps.filter(s => (folded[p.id][r][s.key] || {}).done).length;
+  const answeredBy = p => { const keep = state.steps; state.steps = folded[p.id]; const n = Object.values(TASKS()).filter(taskStatus).length; state.steps = keep; return n; };
+  const lastAt = p => (by[p.id] || []).reduce((m, e) => e.created_at > m ? e.created_at : m, "");
+  const lab = p => roleDef(p.role).title + (p.seq && !roleDef(p.role).unnumbered ? " " + p.seq : "");
+
+  read.appendChild(el("h3", {}, "People"));
+  const rows = [];
+  CONTENT.roles.filter(rd => rd.key !== "readonly").forEach(rd => {
+    const mine = live.filter(p => p.role === rd.key);
+    if (!mine.length && !rd.named) rows.push({ rd, p: null });
+    mine.forEach(p => rows.push({ rd, p }));
+  });
+  const pstate = p => p.role === "admin" ? "Administrator passcode" : p.locked ? "Locked after wrong attempts" : !p.has_passcode ? "Not set" : p.must_change ? "Temporary, awaiting change" : "Set by the person";
+  let html = "<div class='scroll'><table><thead><tr><th>Role</th><th>Name</th><th>Passcode</th><th>Sections marked</th><th>Tasks answered</th><th>Last activity</th><th></th></tr></thead><tbody>";
+  rows.forEach(({ rd, p }) => {
+    if (!p) { html += `<tr><td>${esc(rd.title)}</td><td>${esc(rd.name || "")}</td><td class="open" colspan="5">Has not opened the review</td></tr>`; return; }
+    let acts = "";
+    if (p.role !== "admin") acts += `<button class="linkish" data-act="reset" data-id="${esc(p.id)}">Reset passcode</button>`;
+    if (rd.named) acts += `<button class="linkish" data-act="rename" data-id="${esc(p.id)}">Rename</button><button class="linkish" data-act="merge" data-id="${esc(p.id)}">Merge</button><button class="linkish" data-act="remove" data-id="${esc(p.id)}">Remove</button>`;
+    html += `<tr><td>${esc(lab(p))}</td><td>${esc(p.name || rd.name || "")}</td><td>${esc(pstate(p))}</td><td>${count(p, ROUTE)} of ${total(ROUTE)}</td><td>${answeredBy(p)} of ${Object.keys(TASKS()).length}</td><td>${lastAt(p) ? esc(fmtTime(lastAt(p))) : "None yet"}</td><td class="acts">${acts}</td></tr>`;
+  });
+  html += "</tbody></table></div>";
+  const people = el("div", {}, html); read.appendChild(people);
+  people.querySelectorAll("[data-act]").forEach(b => b.onclick = () => fixDialog(b.dataset.act, live.find(p => p.id === b.dataset.id), live));
+
+  Object.keys(CONTENT.routes).forEach(route => {
+    const cols = live.filter(p => (by[p.id] || []).some(e => e.route === route));
+    read.appendChild(el("h3", {}, "Sections, person by person"));
+    if (!cols.length) { read.appendChild(el("p", { class: "hint" }, "No one has marked or answered anything yet.")); return; }
+    let t = "<div class='scroll'><table><thead><tr><th>Step</th>" + cols.map(p => `<th>${esc(lab(p))}</th>`).join("") + "</tr></thead><tbody>";
+    CONTENT.routes[route].steps.forEach(s => {
+      t += `<tr><td>${esc(s.title)}</td>` + cols.map(p => {
+        const st = folded[p.id][route][s.key];
+        const vals = st && false ? Object.entries(st.values).filter(([, v]) => v !== "").map(([k, v]) => { const r = (s.records || []).find(x => x.key === k); return esc((r ? r.label : k) + ": " + v); }).join("<br>") : "";
+        if (st && st.done) return `<td class="complete">Complete${st.at ? " " + esc(fmtDay(st.at)) : ""}${vals ? `<div class="vals">${vals}</div>` : ""}</td>`;
+        return `<td class="open">${st ? "In progress" : "Not started"}${vals ? `<div class="vals">${vals}</div>` : ""}</td>`;
+      }).join("") + "</tr>";
+    });
+    read.appendChild(el("div", {}, t + "</tbody></table></div>"));
+  });
+
+  const xb = el("button", { class: "btn quiet", type: "button" }, "Export everyone's answers (JSON)");
+  xb.onclick = async () => {
+    const body = { format: "symposion-manuscript-review-all/1", workstream: CONFIG.workstream, page_version: CONFIG.version,
+      manuscript: { file: CONTENT.meta.ms_file, label: CONTENT.meta.ms_label, sha512: CONTENT.meta.ms_sha512 }, exported_utc: new Date().toISOString(),
+      people: live.filter(p => p.role !== "admin").map(p => ({ id: p.id, role: p.role, role_title: lab(p), name: p.name || roleDef(p.role).name || "", ...responsesFor(folded[p.id]) })) };
+    const text = JSON.stringify(body, null, 1);
+    download(`${CONFIG.workstream}_review_all_${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ ...body, export_sha512: await sha512hex(text) }, null, 1) + "\n", "application/json");
+  };
+  read.appendChild(xb);
+  read.appendChild(el("h3", {}, "Latest activity"));
+  const nameOf = id => { const p = data.people.find(x => x.id === id); return p ? lab(p) + (p.name ? ", " + p.name : "") : "Not attributed"; };
+  const verb = { completed: "Completed", reopened: "Reopened", recorded: "Entered values for" };
+  let a = "<div class='scroll'><table><thead><tr><th>When</th><th>Person</th><th>Item</th></tr></thead><tbody>";
+  data.events.slice(0, 40).forEach(e => {
+    const st = (CONTENT.routes[e.route] || { steps: [] }).steps.find(s => s.key === e.step_key);
+    a += `<tr><td>${esc(fmtTime(e.created_at))}</td><td>${esc(nameOf(e.person_id))}</td><td>${esc(verb[e.event] || e.event)} ${st ? esc(st.title) : esc((TASKS()[e.step_key] || {}).title || e.step_key)}</td></tr>`;
+  });
+  read.appendChild(el("div", {}, data.events.length ? a + "</tbody></table></div>" : "<p class='hint'>No progress has been saved yet.</p>"));
+  if (data.unattributed) read.appendChild(el("p", { class: "sub" }, `${data.unattributed} earlier ${data.unattributed === 1 ? "event was" : "events were"} saved before people were named and cannot be attributed.`));
+  if (gone.length) read.appendChild(el("p", { class: "sub" }, "Retired registrations: " + gone.map(p => esc(lab(p) + (p.name ? ", " + p.name : "") + (p.merged_into ? " (merged)" : " (removed)"))).join("; ") + ". Numbers are not reused."));
+}
+
+function tempCode() {
+  const alphabet = "abcdefghjkmnpqrstuvwxyz23456789", bytes = new Uint8Array(8); crypto.getRandomValues(bytes);
+  const s = Array.from(bytes, b => alphabet[b % alphabet.length]).join("");
+  return s.slice(0, 4) + "-" + s.slice(4);
+}
+
+function fixDialog(act, p, live) {
+  const d = $("#fix-dialog"), box = $("#fix-body");
+  const lab = x => roleDef(x.role).title + (x.seq && !roleDef(x.role).unnumbered ? " " + x.seq : "") + (x.name ? ", " + x.name : "");
+  box.innerHTML = "";
+  box.appendChild(el("h3", { id: "fix-title" }, { rename: "Rename", merge: "Merge", remove: "Remove", reset: "Reset passcode" }[act]));
+  box.appendChild(el("p", { class: "dlg-note" }, esc(lab(p) + (!p.name && roleDef(p.role).name ? ", " + roleDef(p.role).name : ""))));
+  const f = el("form", { autocomplete: "off" });
+  let body = "", go = "";
+  if (act === "rename") { body = `<div class="dlg-field"><label for="fx">Corrected name</label><input id="fx" maxlength="80" required></div>`; go = "Save the name"; }
+  else if (act === "reset") {
+    body = `<p class="dlg-note">Give them this temporary passcode yourself. When they next enter they are asked to choose their own, and wrong-attempt locks are cleared. Their saved progress is untouched.</p>
+      <div class="dlg-field"><label for="fx">Temporary passcode, 6 to 64 characters</label><input id="fx" maxlength="64" required spellcheck="false" autocomplete="off"></div>
+      <div class="dlg-actions" style="margin-top:8px"><button class="btn quiet" type="button" data-gen>Suggest one</button></div>`;
+    go = "Set temporary passcode";
+  } else if (act === "merge") {
+    const others = live.filter(x => x.role === p.role && x.id !== p.id);
+    body = others.length
+      ? `<p class="dlg-note">Their saved progress moves to the registration chosen, and this one is retired.</p><div class="dlg-field"><label for="fx">Merge into</label><select id="fx">${others.map(x => `<option value="${esc(x.id)}">${esc(lab(x))}</option>`).join("")}</select></div>`
+      : `<p class="dlg-note">There is no other registration in this role to merge into.</p>`;
+    go = others.length ? "Merge" : "";
+  } else { body = `<p class="dlg-note">The registration is retired and its number is not reused. Saved events are kept in the log.</p>`; go = "Remove"; }
+  f.innerHTML = body + `<div class="dlg-actions">${go ? `<button class="btn live" type="submit">${go}</button>` : ""}<button class="btn quiet" type="button" data-close>Cancel</button></div>`;
+  if (act === "rename") f.querySelector("#fx").value = p.name || "";
+  if (act === "reset") { f.querySelector("#fx").value = tempCode(); f.querySelector("[data-gen]").onclick = () => { f.querySelector("#fx").value = tempCode(); }; }
+  f.querySelector("[data-close]").onclick = () => d.close();
+  f.onsubmit = async ev => {
+    ev.preventDefault();
+    const btn = f.querySelector(".btn.live"); btn.disabled = true;
+    const x = f.querySelector("#fx");
+    try {
+      await rpc("symposion_admin_fix", { p_slug: CONFIG.workstream, p_pass: cred, p_action: act === "reset" ? "reset_passcode" : act, p_person: p.id,
+        p_name: act === "rename" ? x.value : null, p_target: act === "merge" ? x.value : null, p_new_pass: act === "reset" ? x.value : null });
+      d.close(); renderTeam();
+    } catch (e) { btn.disabled = false; box.querySelectorAll(".err").forEach(n => n.remove()); box.appendChild(el("div", { class: "err", role: "alert" }, esc(MSG[e.message] || MSG.server))); }
+  };
+  box.appendChild(f);
+  if (d.showModal) d.showModal();
+}
+
+/* cross-references inside the text move within the walkthrough */
+document.addEventListener("click", ev => {
+  const a = ev.target.closest("a[data-route], a[data-view]");
+  if (!a || !CONTENT) return;
+  ev.preventDefault();
+  if (a.dataset.view) { state.view = a.dataset.view; save(); render();
+    if (a.dataset.anchor) { const t = document.getElementById(a.dataset.anchor); if (t) { t.scrollIntoView({ behavior: "smooth" }); t.focus({ preventScroll: true }); } }
+    else window.scrollTo({ top: 0 });
+    return; }
+  state.view = "walk"; state.route = a.dataset.route;
+  if (a.dataset.step) { const i = CONTENT.routes[state.route].steps.findIndex(s => s.n === Number(a.dataset.step)); if (i >= 0) state.stepIndex[state.route] = i; }
+  save(); render(); window.scrollTo({ top: 0 });
+});
+
+/* reopen within the same tab without re-entering the passcode */
+(async () => { const p = sessGet(STORE_KEY + ".p"); if (p) { try { await unlock(p); start(); } catch (e) {} } })();
+</script>
+</body>
+</html>
