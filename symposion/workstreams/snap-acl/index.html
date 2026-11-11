@@ -446,7 +446,7 @@ dialog .err{margin-top:14px}
   body{background:#fff}
   .shell{display:block;padding:0}
 }
-.orient{max-width:640px;margin:18px 0 26px;padding:18px 20px 20px;background:#F2EDE2;border:1px solid #E7DFCD;border-radius:6px}.orient h3{margin-top:0}.orient p{margin:0 0 14px}.orient .phaseflow{display:block;max-width:600px;height:auto}.orient .phaseflow a{cursor:pointer}.orient .phaseflow a:hover rect,.orient .phaseflow a:focus rect{stroke:#2B7A78;stroke-width:2.5}@media (max-width:600px){.orient{padding:14px 12px}}
+.orient{margin:18px 0 26px;padding:18px 20px 20px;background:#F2EDE2;border:1px solid #E7DFCD;border-radius:6px}.orient p{max-width:640px}.orient h3{margin-top:0}.orient p{margin:0 0 14px}.orient .phaseflow{display:block;height:auto}.orient .phaseflow.wide{max-width:1040px}.orient .phaseflow.narrow{display:none;max-width:600px}@media (max-width:760px){.orient .phaseflow.wide{display:none}.orient .phaseflow.narrow{display:block}}.orient .phaseflow a{cursor:pointer}.orient .phaseflow a:hover rect,.orient .phaseflow a:focus rect{stroke:#2B7A78;stroke-width:2.5}@media (max-width:600px){.orient{padding:14px 12px}}
 </style>
 </head>
 <body>
@@ -464,7 +464,7 @@ dialog .err{margin-top:14px}
     </form>
     <div class="hosted">
       <div class="hosted-brand"><span class="hosted-label">Hosted on</span><span class="wordmark">SYMPOSION</span><a class="sa-link" href="https://scottishnetwork.net/" target="_blank" rel="noopener"><img class="sa-logo" src="assets/scottish-network.png" alt="SCOTTISH Network"></a></div>
-      <p>Symposion is a web-based research application designed and hosted by Dr Andrew J Hall, University of St Andrews, for the SCOTTISH Network (<a href="https://scottishnetwork.net/" target="_blank" rel="noopener">scottishnetwork.net</a>). Contact: <a href="mailto:ajh52@st-andrews.ac.uk">ajh52@st-andrews.ac.uk</a>.</p>
+      <p>Symposion is a web-based research application designed and hosted by Andrew J Hall (AJH), University of St Andrews, for the SCOTTISH Network (<a href="https://scottishnetwork.net/" target="_blank" rel="noopener">scottishnetwork.net</a>). Contact: <a href="mailto:ajh52@st-andrews.ac.uk">ajh52@st-andrews.ac.uk</a>.</p>
     </div>
   </div>
 </main>
@@ -515,7 +515,7 @@ dialog .err{margin-top:14px}
   <footer>
     <div class="foot-in">
       <div>
-        <p style="margin:0 0 6px">Symposion is a web-based research application designed and hosted by Dr Andrew J Hall, University of St Andrews, for the SCOTTISH Network (<a href="https://scottishnetwork.net/" target="_blank" rel="noopener">scottishnetwork.net</a>). Contact: <a href="mailto:ajh52@st-andrews.ac.uk">ajh52@st-andrews.ac.uk</a>.</p>
+        <p style="margin:0 0 6px">Symposion is a web-based research application designed and hosted by Andrew J Hall (AJH), University of St Andrews, for the SCOTTISH Network (<a href="https://scottishnetwork.net/" target="_blank" rel="noopener">scottishnetwork.net</a>). Contact: <a href="mailto:ajh52@st-andrews.ac.uk">ajh52@st-andrews.ac.uk</a>.</p>
         <p style="margin:0">Symposion is an Aurora Performance: Labs application under development, for authorised research group use. <span id="foot-version"></span></p>
       </div>
       <blockquote>Life is short, and Art long; the crisis fleeting; experience perilous, and decision difficult.<cite>Hippocrates, Aphorisms I.1, trans. Francis Adams</cite></blockquote>
@@ -529,7 +529,7 @@ dialog .err{margin-top:14px}
 
 <script>
 "use strict";
-const CONFIG = {"workstream": "snap-acl", "version": "v0_3", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Project Administrator", "name": "Dr Andrew Hall", "locked": true}]};
+const CONFIG = {"workstream": "snap-acl", "version": "v0_4", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Project Administrator", "name": "Andrew Hall", "locked": true}]};
 const STORE_KEY = "symposion." + CONFIG.workstream + ".v2";
 let CONTENT = null, KEY = null, ENV = null;
 let person = null;   // { id, role, seq, name } for a registered person; { role: "readonly" } for a viewer
@@ -568,10 +568,10 @@ const MSG = {
   person_locked: "Too many wrong attempts. Wait fifteen minutes, or choose Forgotten it and email yourself a one-time code.",
   bad_new_passcode: "Choose a passcode of 6 to 64 characters.",
   bad_code: "That code was not accepted. It may have expired or been used; you can ask for a new one.",
-  not_configured: "Codes cannot be emailed just now. Please contact Dr Hall.",
+  not_configured: "Codes cannot be emailed just now. Contact the Symposion Project Administrator (AJH).",
   already_registered: "That role or name already has a passcode. Go back and enter it.",
   not_found: "No one is registered under that name in this role.",
-  not_listed: "That name is not registered for this review. Please contact Dr Hall.",
+  not_listed: "That name is not registered for this review. Contact the Symposion Project Administrator (AJH).",
   bad_name: "Enter your name, between 2 and 80 characters.",
   bad_workstream: "This review is not set up for saving yet.",
   name_taken: "Another person in that role already has that name.",
@@ -842,7 +842,7 @@ function showDialog(step, ctx = {}) {
     box.appendChild(el("p", { class: "dlg-note" }, esc(personFull(w))));
     if (!ctx.sent) {
       box.appendChild(el("p", { class: "dlg-note" }, ctx.first
-        ? "Step 2 of 2. A one-time code will be emailed to the address Dr Hall holds for you. It is valid for 15 minutes and can be used once. You will then choose your own personal passcode, which is the only passcode you need from then on."
+        ? "Step 2 of 2. A one-time code will be emailed to the address held for you. It is valid for 15 minutes and can be used once. You will then choose your own personal passcode, which is the only passcode you need from then on."
         : "A one-time code will be emailed to the address held for you. It is valid for 15 minutes and can be used once. Your current passcode stays valid until you use the code."));
       const f = el("form", { autocomplete: "off" });
       f.innerHTML = `<div class="dlg-actions"><button class="btn live" type="submit">Email me a code</button><button class="btn quiet" type="button" data-back>Back</button></div>`;
@@ -1761,7 +1761,7 @@ function renderBody(s) {
   if (qs.length) {
     const q = el("div", { class: "queries" });
     q.appendChild(el("h3", { class: "sub" }, qs.length === 1 ? "A query for the lead reviewer in this section" : `${["", "One", "Two", "Three", "Four", "Five", "Six"][qs.length] || qs.length} queries for the lead reviewer in this section`));
-    q.appendChild(el("p", { class: "ctx" }, "They match the highlighted notes in the text. Answer here; Dr Hall places the answers in the Word file."));
+    q.appendChild(el("p", { class: "ctx" }, "They match the highlighted notes in the text. Answer here; AJH places the answers in the Word file."));
     qs.forEach(t => q.appendChild(taskCard(t)));
     wrap.appendChild(q);
     wrap.appendChild(el("h3", { class: "sub" }, "The section"));
