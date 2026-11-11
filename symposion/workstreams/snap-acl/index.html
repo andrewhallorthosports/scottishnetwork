@@ -51,7 +51,7 @@ body:has(.pv-doc) .top-in,body:has(.pv-doc) .mainnav-in,body:has(.pv-doc) .platf
 .pv-note{position:absolute;right:.6%;transform:translateY(-1px);background:#fff;border:1px solid var(--navy);color:var(--navy);font-size:11.5px;line-height:1.3;padding:1px 6px;border-radius:2px;opacity:0;z-index:2}
 .pv-note.on,.pv-note:focus-visible{opacity:1}
 .pv-note.noted{opacity:.85;border-color:var(--teal);color:var(--teal)}
-/* manuscript review: numbered paragraphs, open queries and task cards */
+/* review page: numbered paragraphs, open queries and task cards */
 .ms .sub{font-family:var(--display);font-size:21px;color:var(--navy);margin:26px 0 8px}
 .para{display:grid;grid-template-columns:34px 1fr auto;gap:0 10px;align-items:start;padding:6px 0;border-top:1px solid transparent}
 .para:hover{border-top-color:var(--rule)}
@@ -446,6 +446,7 @@ dialog .err{margin-top:14px}
   body{background:#fff}
   .shell{display:block;padding:0}
 }
+.orient{max-width:640px;margin:18px 0 26px;padding:18px 20px 20px;background:#F2EDE2;border:1px solid #E7DFCD;border-radius:6px}.orient h3{margin-top:0}.orient p{margin:0 0 14px}.orient .phaseflow{display:block;max-width:600px;height:auto}.orient .phaseflow a{cursor:pointer}.orient .phaseflow a:hover rect,.orient .phaseflow a:focus rect{stroke:#2B7A78;stroke-width:2.5}@media (max-width:600px){.orient{padding:14px 12px}}
 </style>
 </head>
 <body>
@@ -528,7 +529,7 @@ dialog .err{margin-top:14px}
 
 <script>
 "use strict";
-const CONFIG = {"workstream": "snap-acl", "version": "v0_1", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Administrator", "name": "Dr Andrew Hall", "locked": true}, {"key": "senior", "title": "Senior Author", "name": "Dr Andrew Hall", "hidden": true}]};
+const CONFIG = {"workstream": "snap-acl", "version": "v0_3", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Project Administrator", "name": "Dr Andrew Hall", "locked": true}]};
 const STORE_KEY = "symposion." + CONFIG.workstream + ".v2";
 let CONTENT = null, KEY = null, ENV = null;
 let person = null;   // { id, role, seq, name } for a registered person; { role: "readonly" } for a viewer
@@ -1124,6 +1125,7 @@ function renderMap() {
   m.appendChild(el("h2", {}, esc(OVR.title || CONTENT.overview_title || "The manuscript")));
   m.appendChild(el("p", { class: "fulltitle" }, esc(CONTENT.meta.full_title)));
   m.appendChild(el("p", { class: "lede" }, esc(OVR.lede || CONTENT.overview_lede)));
+  if (CONTENT.orientation_html) { const o = el("section", { class: "orient", "aria-label": "The plan at a glance" }, "<h3>The plan at a glance</h3>" + CONTENT.orientation_html); o.querySelectorAll("a[data-n]").forEach(a => a.addEventListener("click", ev => { ev.preventDefault(); goStep(+a.getAttribute("data-n")); })); m.appendChild(o); }
   const files = IND_LOCKED() ? [] : (CONTENT.pack || []).filter(p => !p.lead_only || LEAD_VIEW());
   if (files.length) { const fx = el("ul", { class: "pack overview-files" }); files.forEach(p => fx.appendChild(packItem(p))); m.appendChild(fx); }
   const guide = person ? (CONTENT.role_guide || {})[person.role] : "";
@@ -1521,7 +1523,7 @@ $("#suggest-btn").addEventListener("click", () => {
 
 /* ---------- tasks: each answer is saved as it is given, against the task, under the person who gave it ---------- */
 const recordsFor = s => (s.task_ids || []).map(id => TASKS()[id]).filter(t => t && t.kind !== "view" && t.kind !== "review");
-const ROLE_NOUN = { lead: "the lead reviewer", second: "the second reviewers", cosupervisor: "the co-supervisors", senior: "the senior author", admin: "the administrator" };
+const ROLE_NOUN = { lead: "the lead reviewer", second: "the second reviewers", cosupervisor: "the co-supervisors", admin: "the administrator" };
 const whoRecords = ts => { const r = [...new Set(ts.flatMap(t => t.for || []))].filter(k => k !== "admin" && k !== "senior"); return r.length ? r.map(k => ROLE_NOUN[k] || k).join(" and ") : "every author"; };
 const LEAD_VIEW = () => !!person && (person.role === "lead" || person.role === "admin" || person.role === "senior");
 const TASKS = () => { const all = CONTENT.tasks || {}, out = {}, adm = !!person && person.role === "admin"; Object.keys(all).forEach(k => { const t = all[k]; if ((!t.lead_only || LEAD_VIEW()) && (adm || IND() || !t.reviewer_only) && (adm || !(t.for || []).length || (!!person && t.for.includes(person.role)))) out[k] = t; }); return out; };
@@ -1804,7 +1806,7 @@ function renderLedger(s) {
   if (rec.done && rec.at) led.appendChild(el("p", { class: "stamp" }, "Marked " + fmtTime(rec.at) + "."));
 }
 
-/* ---------- export: everything this person has entered, as one signed JSON file to send to the senior author ---------- */
+/* ---------- export: everything this person has entered, as one signed JSON file for the administrator ---------- */
 async function sha512hex(text) {
   const h = await crypto.subtle.digest("SHA-512", new TextEncoder().encode(text));
   return Array.from(new Uint8Array(h), b => b.toString(16).padStart(2, "0")).join("");
