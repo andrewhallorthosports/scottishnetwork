@@ -14,7 +14,6 @@
     ["da", "Danish"], ["nb", "Norwegian"], ["fi", "Finnish"], ["pl", "Polish"], ["cs", "Czech"], ["el", "Greek"], ["tr", "Turkish"], ["ru", "Russian"],
     ["zh-hans", "Chinese (simplified)"], ["zh-hant", "Chinese (traditional)"], ["ja", "Japanese"], ["ko", "Korean"], ["ar", "Arabic"], ["he", "Hebrew"], ["fa", "Persian"]];
   const LNAME = Object.fromEntries(LANGS);
-  const ALWAYS_READER = (l) => /^(zh|ja|ko)/.test(l || "");
   const STATUS = { queued: "Queued", running: "Translating", done: "Translated", failed: "Not translated", withdrawn: "Withdrawn" };
   const JUDGE = [["supports", "Supports"], ["differs", "Differs"], ["unclear", "Unclear"]];
   const BASIS = { google: "Google Translate", official_english: "Official English version", fluent_reader: "Fluent reader" };
@@ -80,7 +79,7 @@
         <li>Translation is run by a pre-specified script, with the same settings for every source. The translations used in the review are from Google Translate and Argos Translate; their versions and dates are recorded with each translation and named in the Methods.</li>
         <li>Charting is from Google Translate, read beside Argos Translate. Where an official English version exists, or the source is published in a bilingual journal, the English version is charted and serves as the reference standard.</li>
         <li>Every number in the original is checked against each translation automatically.</li>
-        <li>Each charted item is checked here against both translations. An item on which they disagree, or whose number check fails, is confirmed by a fluent reader before it is charted. For Chinese, Japanese and Korean sources every item is confirmed by a fluent reader.</li>
+        <li>Each charted item is checked here against both translations. An item on which they disagree, or whose number check fails, is flagged for a further check. The administrator or lead author decides how a flagged item is resolved: charting from an official English version, a third established translation service used as a tiebreak, or a fluent reader where one has been agreed in advance. No fluent reader is assumed or promised for any language. Machine translation is generally less reliable for some languages, including Chinese, Japanese and Korean, so the lead author may wish to prefer an official English version or a further check for those sources.</li>
         <li>Separately, as a pre-specified exploratory evaluation, each source is also run through TranslateGemma, an offline model, to record how it would have performed. Its translation is not shown while charting and never enters screening, charting or synthesis; it is revealed only after an item's value has been fixed, for comparison.</li>
       </ul>`);
     }
@@ -128,7 +127,7 @@
       const nm = (t) => { const x = R.numbers[t] || {}; return x.numbers_in_source ? `${pct(x.preserved)} of ${x.numbers_in_source} numbers kept; ${x.segments_flagged} segment(s) flagged` : "no numbers checked yet"; };
       const rows = [
         ["Sources translated", `${R.sources}; ${Object.entries(R.languages).map(([k, v]) => `${k} ${v}`).join(", ")}`],
-        ["Item checks", `${R.items}; ${R.reader_needed} awaiting or needing a fluent reader`],
+        ["Item checks", `${R.items}; ${R.further_check_suggested ?? R.reader_needed ?? 0} flagged for a further check`],
         ["Google Translate and Argos Translate (review)", p.n ? `agreement on ${p.agree} of ${p.n} items, ${pct(p.po)}${ci(p.po_ci)}; Cohen's kappa ${num(p.kappa)}${kci(p.kappa_ci)}; Gwet's AC1 ${num(p.ac1)}${kci(p.ac1_ci)}` : "no items judged on both yet"],
         ["All three, with TranslateGemma (exploratory)", g3.n ? `all agree on ${g3.all_agree} of ${g3.n} items; Fleiss' kappa ${num(g3.fleiss_kappa)}` : "no items judged on all three yet"],
         ...TOOLS.map(([k, n, pur]) => [`${n} against a reference${pur === "exploratory" ? " (exploratory)" : ""}`, acc(k)]),
@@ -216,11 +215,11 @@
       const lst = h("ol", { class: "tr-items" });
       const sup = new Set(d.items.filter((i) => i.supersedes != null).map((i) => i.supersedes));
       for (const i of d.items) {
-        const needs = !sup.has(i.seq) && i.basis === "google" && (ALWAYS_READER(j.lang) || ["google", "argos"].some((k) => i[k] !== "supports" && i[k] !== "not_run"));
+        const needs = !sup.has(i.seq) && i.basis === "google" && ["google", "argos"].some((k) => i[k] !== "supports" && i[k] !== "not_run");
         const li = h("li", { class: i.superseded ? "superseded" : "", value: i.seq });
         li.innerHTML = `<b>${esc(i.item)}</b>: ${esc(i.value)}${i.segment != null ? ` (segment ${i.segment + 1})` : ""}. Charted from ${esc(BASIS[i.basis])}${i.reader ? " (" + esc(i.reader) + ")" : ""}.
           ${TOOLS.map(([k, n, pur]) => `<span class="tr-pill ${i[k] === "supports" ? "ok" : i[k] === "not_run" ? "off" : "warn"}">${esc(n.split(" ")[0])}${pur === "exploratory" ? " (exploratory)" : ""}: ${esc(i[k].replace("_", " "))}</span>`).join("")}
-          ${needs ? '<span class="tr-pill warn">Fluent reader needed before charting</span>' : ""}${i.superseded ? '<span class="tr-pill off">Corrected by a later check</span>' : ""}
+          ${needs ? '<span class="tr-pill warn">Further check suggested before charting</span>' : ""}${i.superseded ? '<span class="tr-pill off">Corrected by a later check</span>' : ""}
           ${i.supersedes != null ? `<span class="hint">Corrects check ${i.supersedes}.</span>` : ""}${i.note ? `<br><span class="hint">${esc(i.note)}</span>` : ""}
           <br><span class="hint">${esc(i.by)}, ${esc(when(i.at))}</span>`;
         lst.appendChild(li);
@@ -238,11 +237,11 @@
         <div class="row"><label>Item<span class="help">What is charted, for example Time from injury to surgery.</span><input name="itemlabel" maxlength="300" required></label>
           <label>Value charted<span class="help">As it will appear in the charting form.</span><input name="value" maxlength="1000" required></label></div>
         <div class="row"><label>Segment<select name="seg"><option value="">Not tied to one segment</option>${j.segments.map((_, i) => `<option value="${i}">${i + 1}</option>`).join("")}</select></label>
-          <label>Charted from<select name="basis">${out.google && out.google.status === "ok" ? '<option value="google">Google Translate</option>' : ""}${j.reference_kind !== "none" ? '<option value="official_english">English version</option>' : ""}<option value="fluent_reader">Fluent reader</option></select></label></div>
-        <label data-reader hidden>Fluent reader<span class="help">Initials of the person who confirmed the item from the original.</span><input name="reader" maxlength="100"></label>
+          <label>Charted from<select name="basis">${out.google && out.google.status === "ok" ? '<option value="google">Google Translate</option>' : ""}${j.reference_kind !== "none" ? '<option value="official_english">English version</option>' : ""}<option value="fluent_reader">Fluent reader (only where agreed in advance)</option></select></label></div>
+        <label data-reader hidden>Fluent reader<span class="help">Initials of the person, agreed in advance by the administrator or lead author, who confirmed the item from the original.</span><input name="reader" maxlength="100"></label>
         <p class="help" style="margin:12px 0 0">Does each translation support the value charted?</p>
         <div class="judge">${REVIEW.map(([k, n]) => `<label>${esc(n)}${out[k] && out[k].status === "ok" ? `<select name="${k}">${JUDGE.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>` : `<input value="Not run" disabled>`}</label>`).join("")}</div>
-        <label>Note<input name="note" maxlength="2000"></label>
+        <label>Note<span class="help">For example, the result of a third translation service used as a tiebreak.</span><input name="note" maxlength="2000"></label>
         <label>Corrects an earlier check<select name="sup"><option value="">No</option>${open.map((i) => `<option value="${i.seq}">${i.seq}: ${esc(i.item)}</option>`).join("")}</select></label>
         <div data-explo hidden class="tr-rules"><p><b>Exploratory evaluation: TranslateGemma</b></p><p class="help">The value above is now fixed. Does TranslateGemma's translation support it?</p>
           <div data-explo-text></div><label>TranslateGemma<select name="translategemma">${JUDGE.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></label></div>
@@ -275,5 +274,5 @@
 
     list();
   }
-  window.SymposionTranslate = { mount, version: "0.18.1" };
+  window.SymposionTranslate = { mount, version: "0.18.2" };
 })();
