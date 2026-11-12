@@ -494,6 +494,7 @@ dialog .err{margin-top:14px}
         <div class="ref" role="group" aria-label="Reference">
           <button data-view="search">Search strings</button>
           <button data-view="pack">Files</button>
+          <button data-view="translate">Translations</button>
           <button data-view="decisions">Decisions</button>
           <button data-view="changes" id="nav-changes" hidden>Changes<span class="badge" id="changes-badge" hidden></span></button>
           <button data-view="team" id="nav-team" hidden>Team</button>
@@ -529,7 +530,7 @@ dialog .err{margin-top:14px}
 
 <script>
 "use strict";
-const CONFIG = {"workstream": "snap-acl", "version": "v0_4", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Project Administrator", "name": "Andrew Hall", "locked": true}]};
+const CONFIG = {"workstream": "snap-acl", "version": "v0_5", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Project Administrator", "name": "Andrew Hall", "locked": true}]};
 const STORE_KEY = "symposion." + CONFIG.workstream + ".v2";
 let CONTENT = null, KEY = null, ENV = null;
 let person = null;   // { id, role, seq, name } for a registered person; { role: "readonly" } for a viewer
@@ -659,7 +660,7 @@ function lockNote(s) {
 }
 function applyLock() {
   const L = IND_LOCKED();
-  document.querySelectorAll('#nav-board, .ref button[data-view="pack"], .ref button[data-view="decisions"]').forEach(b => { b.hidden = L; });
+  document.querySelectorAll('#nav-board, .ref button[data-view="pack"], .ref button[data-view="decisions"], .ref button[data-view="translate"]').forEach(b => { b.hidden = L; });
   if (L && !["map", "walk"].includes(state.view)) state.view = "map";
 }
 const fmtTime = iso => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -1031,13 +1032,14 @@ function render() {
   shell.classList.toggle("wide", !walk);
   $("#rail").hidden = !walk; $("#ledger").hidden = !walk;
   updateChangeUi();
-  $("#read").classList.toggle("wide-read", state.view === "team" || state.view === "map" || state.view === "board" || state.view === "changes");
+  $("#read").classList.toggle("wide-read", state.view === "team" || state.view === "map" || state.view === "board" || state.view === "changes" || state.view === "translate");
   if (walk) renderWalk();
   else if (state.view === "map") renderMap();
   else if (state.view === "board") renderBoard();
   else if (state.view === "changes") renderChanges();
   else if (state.view === "search") renderSearch();
   else if (state.view === "pack") renderPack();
+  else if (state.view === "translate") renderTranslate();
   else if (state.view === "team" && isAdmin()) renderTeam();
   else renderDecisions();
 }
@@ -1910,6 +1912,17 @@ function renderPack() {
   const ul = el("ul", { class: "pack" });
   (CONTENT.pack || []).filter(p => !p.lead_only || LEAD_VIEW()).forEach(p => ul.appendChild(packItem(p)));
   read.appendChild(ul);
+}
+
+let trLoad = null;
+function renderTranslate() {
+  const read = $("#read"); read.innerHTML = "";
+  const box = el("div", {}); read.appendChild(box);
+  const go = () => window.SymposionTranslate.mount(box, { slug: CONFIG.workstream, rpc, auth: () => ({ id: person && person.id, pass: cred }), canPost: canPost(), isAdmin: isAdmin() });
+  if (window.SymposionTranslate) return go();
+  box.appendChild(el("p", { class: "hint" }, "Loading."));
+  trLoad = trLoad || new Promise((res, rej) => { const s = document.createElement("script"); s.src = "assets/translate/translate.js?v=" + encodeURIComponent(CONFIG.version); s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  trLoad.then(() => { if (state.view === "translate") { box.innerHTML = ""; go(); } }, () => { trLoad = null; box.innerHTML = "<p class=\"hint\">The translations panel could not be loaded. Check the connection and try again.</p>"; });
 }
 
 function renderDecisions() {
