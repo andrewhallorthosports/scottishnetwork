@@ -9,6 +9,7 @@
 (function () {
   if (window.SymposionTranslate) return;
   const TOOLS = [["google", "Google Translate", "review"], ["argos", "Argos Translate", "review"], ["translategemma", "TranslateGemma", "exploratory"]];
+  const REVIEW = TOOLS.filter((t) => t[2] === "review");   // the translations the review uses; TranslateGemma is kept out of view until a value is fixed
   const LANGS = [["de", "German"], ["fr", "French"], ["nl", "Dutch"], ["es", "Spanish"], ["it", "Italian"], ["pt", "Portuguese"], ["sv", "Swedish"],
     ["da", "Danish"], ["nb", "Norwegian"], ["fi", "Finnish"], ["pl", "Polish"], ["cs", "Czech"], ["el", "Greek"], ["tr", "Turkish"], ["ru", "Russian"],
     ["zh-hans", "Chinese (simplified)"], ["zh-hant", "Chinese (traditional)"], ["ja", "Japanese"], ["ko", "Korean"], ["ar", "Arabic"], ["he", "Hebrew"], ["fa", "Persian"]];
@@ -76,10 +77,11 @@
     function rules() {
       return h("div", { class: "tr-rules" }, `<p><b>How translation is done in this review</b></p><ul>
         <li>Non-English sources are translated here only, so that every version, check and number is recorded.</li>
-        <li>Each source is translated by three tools fixed in advance: Google Translate and Argos Translate for the review, and TranslateGemma for an exploratory evaluation pre-specified in the protocol. Tool versions and dates are recorded with each translation.</li>
-        <li>Charting is from Google Translate, read beside Argos Translate. Where an official English version exists, or the source is published in a bilingual journal, the English version is charted and serves as the reference for the evaluation.</li>
+        <li>Translation is run by a pre-specified script, with the same settings for every source. The translations used in the review are from Google Translate and Argos Translate; their versions and dates are recorded with each translation and named in the Methods.</li>
+        <li>Charting is from Google Translate, read beside Argos Translate. Where an official English version exists, or the source is published in a bilingual journal, the English version is charted and serves as the reference standard.</li>
         <li>Every number in the original is checked against each translation automatically.</li>
-        <li>Each charted item is checked here against each tool. An item on which the tools disagree, or whose number check fails, is confirmed by a fluent reader before it is charted. For Chinese, Japanese and Korean sources every item is confirmed by a fluent reader.</li>
+        <li>Each charted item is checked here against both translations. An item on which they disagree, or whose number check fails, is confirmed by a fluent reader before it is charted. For Chinese, Japanese and Korean sources every item is confirmed by a fluent reader.</li>
+        <li>Separately, as a pre-specified exploratory evaluation, each source is also run through TranslateGemma, an offline model, to record how it would have performed. Its translation is not shown while charting and never enters screening, charting or synthesis; it is revealed only after an item's value has been fixed, for comparison.</li>
       </ul>`);
     }
 
@@ -128,7 +130,7 @@
         ["Sources translated", `${R.sources}; ${Object.entries(R.languages).map(([k, v]) => `${k} ${v}`).join(", ")}`],
         ["Item checks", `${R.items}; ${R.reader_needed} awaiting or needing a fluent reader`],
         ["Google Translate and Argos Translate (review)", p.n ? `agreement on ${p.agree} of ${p.n} items, ${pct(p.po)}${ci(p.po_ci)}; Cohen's kappa ${num(p.kappa)}${kci(p.kappa_ci)}; Gwet's AC1 ${num(p.ac1)}${kci(p.ac1_ci)}` : "no items judged on both yet"],
-        ["All three tools (exploratory)", g3.n ? `all agree on ${g3.all_agree} of ${g3.n} items; Fleiss' kappa ${num(g3.fleiss_kappa)}` : "no items judged on all three yet"],
+        ["All three, with TranslateGemma (exploratory)", g3.n ? `all agree on ${g3.all_agree} of ${g3.n} items; Fleiss' kappa ${num(g3.fleiss_kappa)}` : "no items judged on all three yet"],
         ...TOOLS.map(([k, n, pur]) => [`${n} against a reference${pur === "exploratory" ? " (exploratory)" : ""}`, acc(k)]),
         ...TOOLS.map(([k, n]) => [`${n}: numbers`, nm(k)]),
       ];
@@ -191,11 +193,11 @@
       // side by side
       const side = h("div", { class: "tr-side" });
       const t = h("table");
-      t.innerHTML = `<thead><tr><th>#</th><th>Original</th>${TOOLS.map(([k, n, pur]) => `<th>${esc(n)}${pur === "exploratory" ? '<span class="explo">exploratory</span>' : ""}</th>`).join("")}</tr></thead>`;
+      t.innerHTML = `<thead><tr><th>#</th><th>Original</th>${REVIEW.map(([k, n]) => `<th>${esc(n)}</th>`).join("")}</tr></thead>`;
       const tb = h("tbody");
       j.segments.forEach((s, i) => {
         const tr = h("tr");
-        tr.innerHTML = `<td class="n">${i + 1}</td><td lang="${esc(j.lang)}">${esc(s)}</td>` + TOOLS.map(([k]) => {
+        tr.innerHTML = `<td class="n">${i + 1}</td><td lang="${esc(j.lang)}">${esc(s)}</td>` + REVIEW.map(([k]) => {
           const x = out[k]; if (!x || x.status !== "ok") return '<td class="hint">Not available</td>';
           const f = (x.number_flags || [])[i] || {};
           const fl = [f.missing && f.missing.length ? `Number not found in translation: ${f.missing.join(", ")}` : "", f.extra && f.extra.length ? `Number not in original: ${f.extra.join(", ")}` : "",
@@ -217,7 +219,7 @@
         const needs = !sup.has(i.seq) && i.basis === "google" && (ALWAYS_READER(j.lang) || ["google", "argos"].some((k) => i[k] !== "supports" && i[k] !== "not_run"));
         const li = h("li", { class: i.superseded ? "superseded" : "", value: i.seq });
         li.innerHTML = `<b>${esc(i.item)}</b>: ${esc(i.value)}${i.segment != null ? ` (segment ${i.segment + 1})` : ""}. Charted from ${esc(BASIS[i.basis])}${i.reader ? " (" + esc(i.reader) + ")" : ""}.
-          ${TOOLS.map(([k, n]) => `<span class="tr-pill ${i[k] === "supports" ? "ok" : i[k] === "not_run" ? "off" : "warn"}">${esc(n.split(" ")[0])}: ${esc(i[k].replace("_", " "))}</span>`).join("")}
+          ${TOOLS.map(([k, n, pur]) => `<span class="tr-pill ${i[k] === "supports" ? "ok" : i[k] === "not_run" ? "off" : "warn"}">${esc(n.split(" ")[0])}${pur === "exploratory" ? " (exploratory)" : ""}: ${esc(i[k].replace("_", " "))}</span>`).join("")}
           ${needs ? '<span class="tr-pill warn">Fluent reader needed before charting</span>' : ""}${i.superseded ? '<span class="tr-pill off">Corrected by a later check</span>' : ""}
           ${i.supersedes != null ? `<span class="hint">Corrects check ${i.supersedes}.</span>` : ""}${i.note ? `<br><span class="hint">${esc(i.note)}</span>` : ""}
           <br><span class="hint">${esc(i.by)}, ${esc(when(i.at))}</span>`;
@@ -229,6 +231,8 @@
 
     function itemForm(j, out, items, sup) {
       const f = h("form", { class: "tr-form" });
+      const gemma = !!(out.translategemma && out.translategemma.status === "ok");
+      let stage = gemma ? 1 : 2;
       const open = items.filter((i) => !sup.has(i.seq));
       f.innerHTML = `<p><b>Record an item check</b></p>
         <div class="row"><label>Item<span class="help">What is charted, for example Time from injury to surgery.</span><input name="itemlabel" maxlength="300" required></label>
@@ -237,21 +241,31 @@
           <label>Charted from<select name="basis">${out.google && out.google.status === "ok" ? '<option value="google">Google Translate</option>' : ""}${j.reference_kind !== "none" ? '<option value="official_english">English version</option>' : ""}<option value="fluent_reader">Fluent reader</option></select></label></div>
         <label data-reader hidden>Fluent reader<span class="help">Initials of the person who confirmed the item from the original.</span><input name="reader" maxlength="100"></label>
         <p class="help" style="margin:12px 0 0">Does each translation support the value charted?</p>
-        <div class="judge">${TOOLS.map(([k, n, pur]) => `<label>${esc(n)}${pur === "exploratory" ? " (exploratory)" : ""}${out[k] && out[k].status === "ok" ? `<select name="${k}">${JUDGE.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>` : `<input value="Not run" disabled>`}</label>`).join("")}</div>
+        <div class="judge">${REVIEW.map(([k, n]) => `<label>${esc(n)}${out[k] && out[k].status === "ok" ? `<select name="${k}">${JUDGE.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>` : `<input value="Not run" disabled>`}</label>`).join("")}</div>
         <label>Note<input name="note" maxlength="2000"></label>
         <label>Corrects an earlier check<select name="sup"><option value="">No</option>${open.map((i) => `<option value="${i.seq}">${i.seq}: ${esc(i.item)}</option>`).join("")}</select></label>
+        <div data-explo hidden class="tr-rules"><p><b>Exploratory evaluation: TranslateGemma</b></p><p class="help">The value above is now fixed. Does TranslateGemma's translation support it?</p>
+          <div data-explo-text></div><label>TranslateGemma<select name="translategemma">${JUDGE.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></label></div>
         <p class="tr-msg" data-msg></p>
-        <div class="tr-actions"><button class="btn live" type="submit">Record item check</button></div>`;
+        <div class="tr-actions"><button class="btn live" type="submit">${gemma ? "Continue to the exploratory check" : "Record item check"}</button></div>`;
       const basis = f.querySelector("[name=basis]"), rd = f.querySelector("[data-reader]");
       const sync = () => { rd.hidden = basis.value !== "fluent_reader"; }; basis.onchange = sync; sync();
       f.onsubmit = async (e) => {
         e.preventDefault();
         const v = (n) => (f.querySelector(`[name="${n}"]`) ? f.querySelector(`[name="${n}"]`).value.trim() : ""), msg = f.querySelector("[data-msg]");
         if (!v("itemlabel") || !v("value") || (v("basis") === "fluent_reader" && !v("reader"))) { msg.className = "tr-msg bad"; msg.textContent = ERR.bad_item; return; }
-        const btn = f.querySelector("button[type=submit]"); btn.disabled = true;
+        const btn = f.querySelector("button[type=submit]");
+        if (stage === 1) {
+          // fix the charted value and the two review judgements, then reveal TranslateGemma for the exploratory comparison only
+          f.querySelectorAll("input, select").forEach((x) => { if (x.name !== "translategemma") x.disabled = true; });
+          const segs = v("seg") === "" ? j.segments.map((_, i) => i) : [Number(v("seg"))];
+          f.querySelector("[data-explo-text]").innerHTML = segs.map((i) => `<p><span class="hint">Segment ${i + 1}:</span> ${esc(out.translategemma.segments[i])}</p>`).join("");
+          f.querySelector("[data-explo]").hidden = false; stage = 2; btn.textContent = "Record item check"; msg.textContent = ""; return;
+        }
+        btn.disabled = true;
         try {
           const r = await call("symposion_translation_item_post", { p_job: j.seq, p_item: v("itemlabel"), p_value: v("value"), p_segment: v("seg") === "" ? null : Number(v("seg")),
-            p_basis: v("basis"), p_reader: v("reader"), p_google: v("google") || "not_run", p_argos: v("argos") || "not_run", p_translategemma: v("translategemma") || "not_run",
+            p_basis: v("basis"), p_reader: v("reader"), p_google: v("google") || "not_run", p_argos: v("argos") || "not_run", p_translategemma: gemma ? v("translategemma") : "not_run",
             p_note: v("note"), p_supersedes: v("sup") === "" ? null : Number(v("sup")) });
           detail(j.seq, `Item check ${r.item.seq} recorded.`);
         } catch (er) { msg.className = "tr-msg bad"; msg.textContent = say(er); btn.disabled = false; }
@@ -261,5 +275,5 @@
 
     list();
   }
-  window.SymposionTranslate = { mount, version: "0.18" };
+  window.SymposionTranslate = { mount, version: "0.18.1" };
 })();
