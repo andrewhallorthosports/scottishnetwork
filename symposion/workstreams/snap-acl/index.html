@@ -530,7 +530,7 @@ dialog .err{margin-top:14px}
 
 <script>
 "use strict";
-const CONFIG = {"workstream": "snap-acl", "version": "v0_7", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Project Administrator", "name": "Andrew Hall", "locked": true}]};
+const CONFIG = {"workstream": "snap-acl", "version": "v0_8", "content": "content.enc.json", "kdf": {"iterations": 310000}, "supabase": {"url": "https://rzokxmobuvrruwavhjzw.supabase.co", "key": "sb_publishable_GU5yMapISLfcCnFlxSRGtw_8VkSOA16"}, "roles": [{"key": "lead", "title": "Lead Author & Lead Reviewer", "name": "Rachael Cullinan"}, {"key": "cosupervisor", "title": "Co-author & Co-supervisor", "named": true, "unnumbered": true, "roster": ["Christopher Gee", "Phil Walmsley"]}, {"key": "second", "title": "Second Reviewer", "named": true, "unnumbered": true, "roster": ["Conor McCann", "Rosa Morgan-Young"]}, {"key": "admin", "title": "Symposion Project Administrator", "name": "Andrew Hall", "locked": true}]};
 const STORE_KEY = "symposion." + CONFIG.workstream + ".v2";
 let CONTENT = null, KEY = null, ENV = null;
 let person = null;   // { id, role, seq, name } for a registered person; { role: "readonly" } for a viewer
@@ -2127,6 +2127,388 @@ document.addEventListener("click", ev => {
 
 /* reopen within the same tab without re-entering the passcode */
 (async () => { const p = sessGet(STORE_KEY + ".p"); if (p) { try { await unlock(p); start(); } catch (e) {} } })();
+</script>
+<script>
+/* symposion-usage:0.1 (13 November 2026)
+   Usage log for signed-in authors on a Symposion portal. One self-contained module, added after the portal's own script, that reads the
+   portal's own globals (CONFIG, state, steps, person, cred, render) and records, for each signed-in author other than the administrator:
+   when a session starts and ends, which step or view is open and for how long (active time, with idle and hidden time left out),
+   how far down it was read, which search strings were copied, which files were downloaded, which record fields were opened or changed
+   (field key and length only, never what was typed), which board, change, PDF and profile panels were opened, and errors.
+   It never records typed content, free text, an IP address or a browser string. Events are sent in small batches to symposion_usage_log
+   with the person's own passcode; the database drops anything outside its closed list. Nothing here can stop the portal working:
+   every path is wrapped, and a failed send is simply retried. */
+(function () {
+  "use strict";
+  try {
+    if (typeof CONFIG === "undefined" || typeof state === "undefined" || typeof render !== "function" || !CONFIG.supabase) return;
+    if (window.__symposionUsage) return;
+
+    var SLUG = CONFIG.workstream, SB = CONFIG.supabase;
+    var SK = "symposion.usage." + SLUG;
+    var IDLE_MS = 30000, FLUSH_MS = 15000, NEW_SESSION_AFTER = 30 * 60 * 1000, MAX_BUF = 600, MAX_ERR = 10;
+
+    var sess = null;            // { id, n, person, last }
+    var buf = [];               // [{ sid, ev }]
+    var loc = null;             // { key, kind, g, rt, active, wall, sc }
+    var lastAct = Date.now(), idle = false, sending = false, errCount = 0, nextNav = "open", ticks = 0, hiddenSent = false, timer = null;
+
+    function slug(s) {
+      s = String(s == null ? "" : s).toLowerCase().replace(/[^a-z0-9_.:-]+/g, "-").replace(/^[^a-z0-9]+/, "").replace(/-+$/, "");
+      return s.slice(0, 60);
+    }
+    function who() {
+      try {
+        if (typeof person === "undefined" || !person || !person.id || !cred) return null;
+        if (person.role === "admin" || person.role === "readonly") return null;
+        return person;
+      } catch (e) { return null; }
+    }
+    function uuid() {
+      try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+      var b = new Uint8Array(16); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(b) : b.forEach(function (_, i) { b[i] = Math.floor(Math.random() * 256); });
+      b[6] = (b[6] & 15) | 64; b[8] = (b[8] & 63) | 128;
+      var h = Array.prototype.map.call(b, function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+      return h.slice(0, 8) + "-" + h.slice(8, 12) + "-" + h.slice(12, 16) + "-" + h.slice(16, 20) + "-" + h.slice(20);
+    }
+    function persist() {
+      try { sessionStorage.setItem(SK, JSON.stringify({ sess: sess, buf: buf.slice(-MAX_BUF) })); } catch (e) {}
+    }
+    function restore() {
+      try { var o = JSON.parse(sessionStorage.getItem(SK) || "null"); if (o) { buf = Array.isArray(o.buf) ? o.buf : []; return o.sess || null; } } catch (e) {}
+      return null;
+    }
+    function device() { var w = window.innerWidth || 0; return w < 600 ? "phone" : w < 1024 ? "tablet" : "desktop"; }
+    function baseMeta() {
+      var m = { dev: device(), vw: window.innerWidth || 0, vh: window.innerHeight || 0, ver: String(CONFIG.version || ""), on: navigator.onLine !== false };
+      try { m.tz = -new Date().getTimezoneOffset(); } catch (e) {}
+      return m;
+    }
+
+    /* ---------------------------------------------------------------- events */
+    function emit(e, g, ms, m) {
+      if (!sess) return;
+      var ev = { n: sess.n++, t: Date.now(), e: e, g: g || "", m: m || {} };
+      if (ms != null) ev.ms = Math.max(0, Math.round(ms));
+      buf.push({ sid: sess.id, ev: ev });
+      if (buf.length > MAX_BUF) buf.splice(0, buf.length - MAX_BUF);
+      sess.last = ev.t;
+      persist();
+      schedule(e === "session_start" ? 500 : 5000);
+    }
+    function schedule(ms) { if (timer) return; timer = setTimeout(function () { timer = null; flush(false); }, ms); }
+
+    function ensure() {
+      var p = who();
+      if (!p) return false;
+      if (sess && sess.person === p.id) return true;
+      if (sess) endSession();
+      var s = restore(), now = Date.now();
+      if (s && s.person === p.id && s.last && now - s.last < NEW_SESSION_AFTER) {
+        sess = s; nextNav = "reload";
+        emit("tab_visible", "", null, { nav: "reload", on: navigator.onLine !== false });
+      } else {
+        sess = { id: uuid(), n: 0, person: p.id, last: now, t0: now };
+        emit("session_start", "", null, baseMeta());
+      }
+      return true;
+    }
+    function endSession() {
+      if (!sess) return;
+      closeLoc();
+      emit("session_end", "", null, { wall: Math.max(0, Math.round((sess.last || 0) - (sess.t0 || sess.last || 0))) });
+      flush(true);
+      sess = null; loc = null;
+      try { sessionStorage.removeItem(SK); } catch (e) {}
+    }
+
+    /* ---------------------------------------------------------------- location and time on it */
+    function curLoc() {
+      if (!who()) return null;
+      var v = state.view, rt = slug(state.route || "");
+      if (v === "walk" && typeof steps === "function") {
+        var s = null;
+        try { s = steps()[(state.stepIndex && state.stepIndex[state.route]) || 0]; } catch (e) {}
+        var k = slug(s && s.key);
+        return { key: "step:" + rt + ":" + k, kind: "step", g: k || "unknown", rt: rt };
+      }
+      return { key: "view:" + slug(v), kind: "view", g: slug(v) || "unknown", rt: rt };
+    }
+    function openLoc(l, nav) {
+      loc = { key: l.key, kind: l.kind, g: l.g, rt: l.rt, active: 0, wall: 0, sc: 0 };
+      var how = nav && nav !== "open" ? nav : nextNav; nextNav = "open";
+      emit(l.kind === "step" ? "step_open" : "view_open", l.g, null, { rt: l.rt, nav: how });
+      scrolled();
+    }
+    function closeLoc() {
+      if (!loc) return;
+      var m = { rt: loc.rt, wall: loc.wall };
+      if (loc.sc) m.sc = loc.sc;
+      emit(loc.kind === "step" ? "step_close" : "view_close", loc.g, loc.active, m);
+      loc = null;
+    }
+    function track() {
+      if (!ensure()) return;
+      var l = curLoc();
+      if (!l) return;
+      if (loc && loc.key === l.key) return;
+      closeLoc(); openLoc(l, "open");
+    }
+    function scrolled() {
+      if (!loc) return;
+      var d = document.documentElement, h = Math.max(d.scrollHeight, document.body ? document.body.scrollHeight : 0, 1);
+      var pct = Math.min(100, Math.round(100 * ((window.scrollY || d.scrollTop || 0) + (window.innerHeight || 0)) / h));
+      if (pct > loc.sc) loc.sc = pct;
+    }
+    function activity() { lastAct = Date.now(); idle = false; }
+
+    function tick() {
+      try {
+        if (!sess) { if (who()) track(); return; }
+        if (!document.hidden) {
+          if (loc) loc.wall += 1000;
+          if (Date.now() - lastAct <= IDLE_MS) { if (loc) loc.active += 1000; }
+          else if (!idle) { idle = true; emit("idle", loc ? loc.g : "", loc ? loc.active : 0); }
+        }
+        if (++ticks % (FLUSH_MS / 1000) === 0 || buf.length >= 50) flush(false);
+      } catch (e) {}
+    }
+
+    /* ---------------------------------------------------------------- sending */
+    function flush(keepalive) {
+      var p = who();
+      if (sending || !p || !buf.length || !sess || sess.person !== p.id) return;
+      var sid = buf[0].sid, batch = [];
+      for (var i = 0; i < buf.length && batch.length < 100 && buf[i].sid === sid; i++) batch.push(buf[i].ev);
+      sending = true;
+      var done = function (ok) { sending = false; if (ok) { buf.splice(0, batch.length); persist(); if (buf.length) setTimeout(function () { flush(false); }, 200); } };
+      try {
+        fetch(SB.url + "/rest/v1/rpc/symposion_usage_log", {
+          method: "POST", keepalive: !!keepalive,
+          headers: { apikey: SB.key, Authorization: "Bearer " + SB.key, "Content-Type": "application/json" },
+          body: JSON.stringify({ p_slug: SLUG, p_person: p.id, p_pass: cred, p_session: sid, p_events: batch })
+        }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+          // a refusal that retrying cannot fix drops the batch; a wrong passcode or an outage keeps it for later
+          if (j && (j.ok || j.error === "bad_request" || j.error === "rate" || j.error === "person_gone")) return done(true);
+          done(false);
+        }).catch(function () { done(false); });
+      } catch (e) { sending = false; }
+    }
+
+    /* ---------------------------------------------------------------- hooks on the portal's own functions */
+    function wrap(name, before, after) {
+      try {
+        var o = window[name];
+        if (typeof o !== "function") return;
+        window[name] = function () {
+          var a = arguments;
+          try { if (before) before.apply(null, a); } catch (e) {}
+          var r = o.apply(this, a);
+          if (after) { try { if (r && typeof r.then === "function") r.then(function () { try { after.apply(null, a); } catch (e) {} }, function () {}); else after.apply(null, a); } catch (e) {} }
+          return r;
+        };
+      } catch (e) {}
+    }
+    wrap("render", null, function () { track(); });
+    wrap("becomePerson", null, function () { track(); });
+    wrap("personGone", function () { endSession(); });
+    wrap("enterReadOnly", function () { endSession(); });
+    wrap("showDialog", function (name) {
+      if (!sess || !who()) return;
+      if (name === "roles") { endSession(); return; }
+      emit("dialog_open", slug(typeof name === "string" ? name : ""));
+    });
+    wrap("openBoard", function () { if (ensure()) emit("board_open", ""); });
+    wrap("openChange", function () { if (ensure()) emit("change_open", ""); });
+    wrap("openPdf", function (file) { if (ensure()) emit("pdf_open", slug(file)); });
+    wrap("previewPanel", function () { if (ensure()) emit("preview_open", ""); });
+    ["exportBoard", "exportChanges", "exportReview", "detailsCsv"].forEach(function (fn) {
+      wrap(fn, function () { if (ensure()) emit("download", slug(fn)); });
+    });
+    ["detailsDialog", "detailsPanel"].forEach(function (fn) {
+      wrap(fn, function () { if (ensure()) emit("dialog_open", "details"); });
+    });
+    (function () {
+      var o = window.rpc;
+      if (typeof o !== "function") return;
+      window.rpc = function (fn, args) {
+        var r = o.apply(this, arguments);
+        if (r && typeof r.then === "function") {
+          r.then(null, function (e) {
+            try {
+              if (sess && who() && errCount < MAX_ERR && String(fn).indexOf("symposion_usage") !== 0) {
+                errCount++; emit("error", "", null, { fn: slug(fn).replace(/-/g, "_"), code: slug(e && e.message) || "unknown" });
+              }
+            } catch (x) {}
+          });
+        }
+        return r;
+      };
+    })();
+
+    /* ---------------------------------------------------------------- the page's own controls, by delegation */
+    document.addEventListener("click", function (ev) {
+      try {
+        activity();
+        if (!ensure()) return;
+        var t = ev.target && ev.target.closest ? ev.target.closest("button, a, summary") : null;
+        if (!t) return;
+        var txt = (t.textContent || "").replace(/\s+/g, " ").trim();
+        if (t.classList.contains("copy")) {
+          var box = t.closest(".db"), h = box && box.querySelector("h3");
+          emit("copy", slug(h ? h.textContent : "") || "text"); return;
+        }
+        var li = t.closest("ul.pack li");
+        if (li && /download/i.test(txt) && !/preview/i.test(txt)) { var nm = li.querySelector(".name"); emit("download", slug(nm ? nm.textContent : "") || "file"); return; }
+        if (/^(export|download)\b/i.test(txt) && txt.length < 40) { emit("download", slug(txt)); return; }
+        var x = t.closest("a[data-route], a[data-view]");
+        if (x) emit("xref", slug(x.dataset.view || ("step-" + (x.dataset.step || ""))) || "link");
+      } catch (e) {}
+    }, true);
+
+    // record fields: the field key and the length of what was entered, never the value
+    function fieldTarget(el) {
+      var id = el.id || el.name || "";
+      var task = el.closest && el.closest(".task");
+      if (task && task.id) return slug(task.id);
+      return slug(id);
+    }
+    function inRecord(el) { return !!(el && el.closest && (el.closest("#ledger") || el.closest(".task"))); }
+    document.addEventListener("focusin", function (ev) {
+      try { var el = ev.target; if (!inRecord(el) || !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || !ensure()) return; emit("field_focus", fieldTarget(el)); } catch (e) {}
+    }, true);
+    document.addEventListener("change", function (ev) {
+      try {
+        var el = ev.target; if (!inRecord(el) || !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || !ensure()) return;
+        var len = (el.type === "radio" || el.type === "checkbox") ? 0 : String(el.value || "").length;
+        emit("field_change", fieldTarget(el), null, { len: len });
+      } catch (e) {}
+    }, true);
+
+    ["pointerdown", "keydown", "wheel", "touchstart"].forEach(function (n) { document.addEventListener(n, activity, { passive: true, capture: true }); });
+    var raf = false;
+    window.addEventListener("scroll", function () { activity(); if (raf) return; raf = true; requestAnimationFrame(function () { raf = false; scrolled(); }); }, { passive: true });
+
+    document.addEventListener("visibilitychange", function () {
+      try {
+        if (!sess) return;
+        if (document.hidden) { closeLoc(); if (!hiddenSent) { hiddenSent = true; emit("tab_hidden", "", null, { on: navigator.onLine !== false }); } flush(true); }
+        else { hiddenSent = false; activity(); emit("tab_visible", "", null, { nav: "resume" }); var l = curLoc(); if (l) openLoc(l, "resume"); }
+      } catch (e) {}
+    });
+    window.addEventListener("pagehide", function () { try { if (!sess) return; closeLoc(); if (!hiddenSent) { hiddenSent = true; emit("tab_hidden", "", null, { nav: "pagehide" }); } flush(true); } catch (e) {} });
+    window.addEventListener("error", function () { try { if (sess && who() && errCount < MAX_ERR) { errCount++; emit("error", "", null, { code: "js" }); } } catch (e) {} });
+    window.addEventListener("unhandledrejection", function () { try { if (sess && who() && errCount < MAX_ERR) { errCount++; emit("error", "", null, { code: "js_promise" }); } } catch (e) {} });
+
+    /* ---------------------------------------------------------------- the administrator's view (Team, below the progress table) */
+    function usageStyle() {
+      if (document.getElementById("usage-style")) return;
+      var st = document.createElement("style"); st.id = "usage-style";
+      st.textContent = ".usage{margin-top:34px;border-top:1px solid var(--rule,#D8CFBC);padding-top:22px}.usage h3{margin-top:26px}.usage .urange{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}" +
+        ".usage .urange button[aria-pressed=true]{background:var(--navy,#1E2D4A);color:#fff;border-color:var(--navy,#1E2D4A)}.usage .uscroll{overflow-x:auto;margin:8px 0 18px}" +
+        ".usage table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;line-height:1.4;background:var(--ivory,#FBF8F1)}.usage th,.usage td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--rule,#D8CFBC);vertical-align:top}" +
+        ".usage th{font-weight:600;color:var(--navy,#1E2D4A)}.usage td.num,.usage th.num{text-align:right;font-variant-numeric:tabular-nums}.usage .ugap{color:#8a2d1c;font-weight:600}.usage .umeta{color:var(--muted,#6A6355);font-size:13px}";
+      document.head.appendChild(st);
+    }
+    function fmtDur(ms) {
+      ms = Math.round((ms || 0) / 1000); if (ms < 60) return ms + " s";
+      var m = Math.floor(ms / 60), sec = ms % 60; if (m < 60) return m + " min " + ("0" + sec).slice(-2) + " s";
+      return Math.floor(m / 60) + " h " + ("0" + (m % 60)).slice(-2) + " min";
+    }
+    function fmtAt(t) { return t ? String(t).replace("T", " ").slice(0, 16) + " UTC" : "never"; }
+    function mk(tag, text, cls) { var e = document.createElement(tag); if (text != null) e.textContent = text; if (cls) e.className = cls; return e; }
+    function table(head, rows, numCols) {
+      var wrap = mk("div", null, "uscroll"), t = mk("table"), th = mk("tr");
+      head.forEach(function (h, i) { var c = mk("th", h, numCols && numCols.indexOf(i) >= 0 ? "num" : ""); th.appendChild(c); });
+      var thead = mk("thead"); thead.appendChild(th); t.appendChild(thead);
+      var tb = mk("tbody");
+      rows.forEach(function (r) { var tr = mk("tr"); r.forEach(function (v, i) { var c = mk("td", v == null ? "" : String(v), numCols && numCols.indexOf(i) >= 0 ? "num" : ""); tr.appendChild(c); }); tb.appendChild(tr); });
+      if (!rows.length) { var tr0 = mk("tr"), c0 = mk("td", "Nothing recorded for this period."); c0.colSpan = head.length; tr0.appendChild(c0); tb.appendChild(tr0); }
+      t.appendChild(tb); wrap.appendChild(t); return wrap;
+    }
+    function csvOf(rows) {
+      var q = function (v) { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+      return rows.map(function (r) { return r.map(q).join(","); }).join("\n") + "\n";
+    }
+    var usageRange = "all", usageRecent = 500;
+    async function usageView(read) {
+      if (typeof isAdmin !== "function" || !isAdmin()) return;
+      usageStyle();
+      var box = mk("section", null, "usage"); box.setAttribute("aria-label", "Usage");
+      box.appendChild(mk("h3", "Usage")); box.lastChild.style.marginTop = "0";
+      box.appendChild(mk("p", "How the team uses this page: when people sign in, which steps they open and for how long, which features they use, and where the page gets in their way. Seen by the administrator only. Typed content is never recorded; the administrator’s own use is not logged.", "umeta"));
+      var bar = mk("div", null, "urange"); box.appendChild(bar);
+      var body = mk("div"); box.appendChild(body);
+      read.appendChild(box);
+      var ranges = [["all", "All time", null], ["7d", "Last 7 days", 7 * 864e5], ["24h", "Last 24 hours", 864e5]];
+      function draw() {
+        bar.innerHTML = "";
+        ranges.forEach(function (r) {
+          var b = mk("button", r[1], "btn quiet"); b.type = "button"; b.setAttribute("aria-pressed", String(usageRange === r[0]));
+          b.onclick = function () { usageRange = r[0]; draw(); }; bar.appendChild(b);
+        });
+        var more = mk("button", "Load more of the log", "btn quiet"); more.type = "button"; more.onclick = function () { usageRecent = Math.min(5000, usageRecent * 2); draw(); }; bar.appendChild(more);
+        body.innerHTML = ""; body.appendChild(mk("p", "Loading", "umeta"));
+        var since = null; ranges.forEach(function (r) { if (r[0] === usageRange && r[2]) since = new Date(Date.now() - r[2]).toISOString(); });
+        rpc("symposion_usage_overview", { p_slug: CONFIG.workstream, p_pass: cred, p_since: since, p_recent: usageRecent }).then(function (d) { render(d); }, function (e) {
+          body.innerHTML = ""; body.appendChild(mk("p", e && e.message === "offline" ? "The usage log could not be reached. Check the connection and try again." : "The usage log is not available on this page yet.", "umeta"));
+        });
+      }
+      function render(d) {
+        body.innerHTML = "";
+        var q = d.quality || {}, who = {};
+        (d.people || []).forEach(function (p) { who[p.id] = (roleDef ? roleDef(p.role).title : p.role) + (p.seq ? " " + p.seq : "") + (p.name ? ": " + p.name : ""); });
+        var s1 = (q.people_with_events || 0) + " of " + (q.people_registered || 0) + " registered people have used the page; " + (q.sessions || 0) + " sessions, " + (q.events || 0) + " events, from " + fmtAt(q.first_event_at) + " to " + fmtAt(q.last_event_at) + ".";
+        body.appendChild(mk("p", s1));
+        var lost = (d.people || []).reduce(function (a, p) { return a + (p.lost_events || 0); }, 0);
+        var flags = [];
+        if (lost) flags.push(lost + " events were lost in transit (gaps in session numbering), so times may be understated.");
+        if (q.clock_skew_over_5min) flags.push(q.clock_skew_over_5min + " events came from a device clock more than five minutes out; the server time is used.");
+        if (q.unattributed_progress_rows) flags.push(q.unattributed_progress_rows + " older progress records have no person attached and are not counted as anyone’s activity.");
+        flags.forEach(function (f) { body.appendChild(mk("p", f, "ugap")); });
+
+        body.appendChild(mk("h3", "People"));
+        body.appendChild(table(["Person", "Registered", "Sessions", "Days active", "Active time", "Last seen", "Events"],
+          (d.people || []).map(function (p) { return [who[p.id], fmtAt(p.registered_at).slice(0, 10), p.sessions, p.active_days, fmtDur(p.active_ms), p.last_at ? fmtAt(p.last_at) : "not since registering", p.events]; }), [2, 3, 6]));
+
+        body.appendChild(mk("h3", "Steps and views"));
+        body.appendChild(table(["Route", "Step", "People", "Opens", "Median active time", "Total active time", "Median read to (%)"],
+          (d.steps || []).map(function (x) { return [x.route || "", x.step, x.people, x.opens, fmtDur(x.active_ms_median), fmtDur(x.active_ms_total), x.scroll_median == null ? "" : x.scroll_median]; }), [2, 3, 6]));
+
+        body.appendChild(mk("h3", "Features used"));
+        body.appendChild(table(["Event", "Target", "Times", "People"], (d.features || []).map(function (x) { return [x.event, x.target, x.count, x.people]; }), [2, 3]));
+
+        var dv = d.devices || {}, hrs = d.start_hours_utc || {};
+        body.appendChild(mk("h3", "Devices and times"));
+        body.appendChild(mk("p", "Sessions by device: " + (Object.keys(dv).length ? Object.keys(dv).map(function (k) { return k + " " + dv[k]; }).join(", ") : "none yet") +
+          ". Session starts by hour (UTC): " + (Object.keys(hrs).length ? Object.keys(hrs).sort().map(function (k) { return k + "h " + hrs[k]; }).join(", ") : "none yet") + ".", "umeta"));
+
+        body.appendChild(mk("h3", "Audit log"));
+        var rows = (d.recent || []).map(function (r) {
+          var m = r.meta || {}, det = Object.keys(m).map(function (k) { return k + " " + m[k]; }).join(", ");
+          return [fmtAt(r.at), who[r.person_id] || "removed person", String(r.session).slice(0, 8), r.n, r.event, r.target, r.active_ms == null ? "" : fmtDur(r.active_ms), det];
+        });
+        var dl = mk("button", "Download the log as CSV", "btn quiet"); dl.type = "button";
+        dl.onclick = function () {
+          var all = [["time_utc", "person", "session", "n", "event", "target", "active_ms", "detail"]].concat((d.recent || []).map(function (r) {
+            var m = r.meta || {}; return [r.at, who[r.person_id] || "removed person", r.session, r.n, r.event, r.target, r.active_ms == null ? "" : r.active_ms, Object.keys(m).map(function (k) { return k + " " + m[k]; }).join("; ")];
+          }));
+          var url = URL.createObjectURL(new Blob([csvOf(all)], { type: "text/csv" })), a = document.createElement("a");
+          a.href = url; a.download = CONFIG.workstream + "_usage_log.csv"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        };
+        body.appendChild(dl);
+        body.appendChild(table(["Time", "Person", "Session", "No.", "Event", "Target", "Active time", "Detail"], rows, [3]));
+        body.appendChild(mk("p", "Showing the most recent " + rows.length + " events, newest first.", "umeta"));
+      }
+      draw();
+    }
+    wrap("renderTeam", null, function () { var r = document.getElementById("read"); if (r && state.view === "team") usageView(r); });
+
+    setInterval(tick, 1000);
+    window.__symposionUsage = { version: "0.1", pending: function () { return buf.length; }, session: function () { return sess ? sess.id : null; }, flush: function () { flush(false); } };
+    try { track(); } catch (e) {}
+  } catch (e) { /* the log must never get in the way of the portal */ }
+})();
 </script>
 </body>
 </html>
