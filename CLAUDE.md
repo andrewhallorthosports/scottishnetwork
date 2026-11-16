@@ -16,6 +16,8 @@ There is no build step. The files in the repository are served exactly as they a
   - `snap-femur/` — periprosthetic femur fractures (Bone & Joint Journal, 2026)
   - `glp1-oa/` — GLP-1 receptor agonists and OA (BJSM, 2026)
   - `ras-perceptions/` — perceptions of robot-assisted arthroplasty (Bone & Joint Open, 2026)
+  - `working-age/` — waiting for hip and knee arthroplasty in people of working age (Bone & Joint Open, 2026)
+  - `velys-evaluation/` — VELYS strategic technology evaluation against the NICE EVA (Computer Assisted Surgery, 2026)
 - `CNAME`, `README.md`.
 
 **Folder slugs are case-sensitive** on GitHub Pages. For example the knee arthroplasty
@@ -58,6 +60,10 @@ Do not truncate, re-wrap, or otherwise alter these blobs when editing a file.
 ## Working style
 
 - Keep changes minimal and consistent with the existing markup and tokens.
-- Prefer a branch + pull request so changes can be reviewed before they go live; only
-  commit directly to `main` when explicitly asked (remember: `main` is production).
+- Publishing rule (AH, 16 Nov 2026): every change goes on a branch with a pull request.
+  When AH says "publish" in the session, Claude merges the pull request to `main` itself
+  and then checks the live page at scottishnetwork.net. Never commit directly to `main`.
+- Commits are made under AH's name (Andrew Hall <andrew@andrewhallortho.uk>), and nothing
+  a visitor or collaborator sees carries AI wording. Where a merge message is written by
+  AH on GitHub (squash and merge), he edits it himself.
 - Never commit secrets or API keys.
