@@ -17,6 +17,7 @@ There is no build step. The files in the repository are served exactly as they a
   - `glp1-oa/` — GLP-1 receptor agonists and OA (BJSM, 2026)
   - `ras-perceptions/` — perceptions of robot-assisted arthroplasty (Bone & Joint Open, 2026)
   - `working-age/` — waiting for hip and knee arthroplasty in people of working age (Bone & Joint Open, 2026)
+  - `velys-evaluation/` — VELYS strategic technology evaluation against the NICE EVA (Computer Assisted Surgery, 2026)
 - `CNAME`, `README.md`.
 
 **Folder slugs are case-sensitive** on GitHub Pages. For example the knee arthroplasty
