@@ -294,6 +294,40 @@ dialog h3{font-family:var(--display);font-size:26px;color:var(--navy);margin:0 0
 .roles .rn{font-size:14.5px;color:var(--muted)}
 .roles button.locked{background:var(--bone)}
 .roles .lock{display:inline-block;vertical-align:-2px;margin-right:6px}
+#details-dialog{width:min(680px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto}
+.det-sec{margin-top:22px;padding-top:16px;border-top:1px solid var(--rule)}
+.det-sec:first-of-type{border-top:0;padding-top:0}
+.det-sec h4{font-family:var(--display);font-size:19px;color:var(--navy);margin:0 0 4px;font-weight:500}
+.det-sec .opt{font-family:var(--body);font-size:13.5px;color:var(--muted);font-weight:400}
+.det-list{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:10px}
+.det-row{min-width:0}
+.det-row{display:flex;gap:6px;align-items:center}
+.det-row input,.det-row select{flex:1;min-width:0;font-family:var(--body);font-size:16px;padding:9px 11px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:2px}
+.det-row input,.det-row select{width:auto}
+.det-row select.plat{flex:0 0 132px}
+.det-row input:focus,.det-row select:focus,.det-sec textarea:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-wash)}
+.det-row .ix{flex:0 0 1.6em;text-align:right;color:var(--umber);font-family:var(--display);font-size:17px}
+.det-row button{flex:0 0 auto;background:#fff;border:1px solid var(--rule);color:var(--muted);width:34px;height:38px;border-radius:2px;font-size:15px}
+.det-row button:hover{border-color:var(--teal);color:var(--teal)}
+.det-add{margin-top:10px}
+.det-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 14px;margin-top:10px}
+.det-checks label{display:flex;gap:8px;align-items:flex-start;font-size:15px;line-height:1.35}
+.det-checks input{margin-top:3px;flex:0 0 auto}
+.det-sec textarea{width:100%;min-height:84px;font-family:var(--body);font-size:16px;padding:9px 11px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:2px;margin-top:8px}
+.det-radio{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:15px}
+.det-radio label{display:flex;gap:7px;align-items:center}
+.det-email{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-top:6px;font-size:15.5px}
+.det-email b{font-weight:500;color:var(--navy);overflow-wrap:anywhere}
+.det-ok{color:var(--teal);font-size:14.5px;margin-top:8px}
+.yourdetails{margin:18px 0 6px;padding:14px 16px;background:#fff;border:1px solid var(--rule);border-left:3px solid var(--teal)}
+.yourdetails h3{margin-top:0}
+.yourdetails ol{margin:6px 0 8px 1.3em;padding:0}
+.yourdetails .dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;font-size:15px;margin:6px 0 10px}
+.yourdetails .dl dt{color:var(--muted)}
+.yourdetails .dl dd{margin:0;overflow-wrap:anywhere}
+.authordetails td{font-size:13.5px;vertical-align:top}
+.authordetails td ol{margin:0 0 0 1.1em;padding:0}
+@media (max-width:560px){#details-dialog{padding:22px 16px}.det-row{gap:4px}.det-row button{width:30px}.det-row select.plat{flex-basis:96px}.yourdetails .dl{grid-template-columns:1fr}.yourdetails .dl dt{margin-top:4px}}
 .dlg-field{margin-top:16px}
 .dlg-field label{display:block;font-size:14.5px;margin-bottom:6px}
 .dlg-field input,.dlg-field select{width:100%;font-family:var(--body);font-size:17px;padding:10px 12px;border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:2px}
@@ -475,7 +509,7 @@ dialog .err{margin-top:14px}
       <div class="hosted-brand"><span class="hosted-label">Hosted on</span><span class="wordmark">SYMPOSION</span><a class="sa-link" href="https://scottishnetwork.net/" target="_blank" rel="noopener"><img class="sa-logo" src="assets/scottish-network.png" alt="SCOTTISH Network"></a></div>
       <div class="status">
         <button type="button" class="suggest-btn" id="suggest-btn" hidden>Suggest a change</button>
-        <div class="who" id="who" hidden><span id="who-label"></span><button type="button" id="who-change">Change</button></div>
+        <div class="who" id="who" hidden><span id="who-label"></span><button type="button" id="who-details" hidden>Your details</button><button type="button" id="who-change">Change</button></div>
         <div class="sync" id="sync" aria-live="polite"><span class="dot"></span><span id="sync-text">Not yet saved</span></div>
       </div>
     </div>
@@ -527,6 +561,7 @@ dialog .err{margin-top:14px}
 <dialog id="role-dialog" aria-labelledby="role-title"><div id="role-body"></div></dialog>
 <dialog id="fix-dialog" aria-labelledby="fix-title"><div id="fix-body"></div></dialog>
 <dialog id="change-dialog" aria-labelledby="chg-title"><div id="change-body"></div></dialog>
+<dialog id="details-dialog" aria-labelledby="det-title"><div id="details-body"></div></dialog>
 
 <script>
 "use strict";
@@ -560,6 +595,11 @@ function readLast() { try { return JSON.parse(lsGet(STORE_KEY + ".last") || "nul
 
 /* ---------- Symposion functions ---------- */
 const MSG = {
+  need_position: "Add at least one role or position.",
+  need_country: "Choose your main country of work.",
+  need_coi: "Choose whether you have interests to declare.",
+  need_coi_text: "Describe the interests you are declaring, or choose None to declare.",
+  need_credit: "Choose at least one CRediT contribution for this project.",
   offline: "Symposion could not be reached. Check your connection and try again.",
   server: "Something went wrong at Symposion. Try again in a moment.",
   admin_denied: "That passcode was not accepted.",
@@ -577,7 +617,20 @@ const MSG = {
   bad_workstream: "This review is not set up for saving yet.",
   name_taken: "Another person in that role already has that name.",
   bad_person: "That registration cannot be changed.",
-  bad_target: "That registration cannot be merged into the one chosen."
+  bad_target: "That registration cannot be merged into the one chosen.",
+  no_affiliation: "Add at least one affiliation.",
+  bad_affiliations: "Each affiliation should be 2 to 300 characters, and there can be up to ten.",
+  bad_positions: "Each role or position can be up to 200 characters, and there can be up to eight.",
+  bad_orcid: "That ORCID iD is not valid. It has the form 0000-0000-0000-0000 (the last character may be X).",
+  other_setting: "Please specify the other work setting, or untick Other.",
+  bad_coi: "The declaration of interests can be up to 2,000 characters.",
+  bad_socials: "Each handle can be up to 200 characters, and there can be up to eight.",
+  bad_details: "Those details could not be saved. Please check them and try again.",
+  bad_email: "Enter a valid email address.",
+  same_email: "That is already your email address.",
+  rate: "Too many codes have been asked for. Wait an hour and try again.",
+  send: "The code could not be sent to that address. Check it and try again.",
+  person_gone: "Your registration could not be found. Please contact Dr Hall."
 };
 async function rpc(fn, args) {
   let r;
@@ -676,6 +729,7 @@ function start(signedIn) {
     document.querySelectorAll(".route button").forEach(b => b.addEventListener("click", () => { state.route = b.dataset.route; save(); render(); }));
     $("#steps-toggle").addEventListener("click", () => setRail(!$("#rail").classList.contains("open")));
     $("#who-change").addEventListener("click", () => { save(); showDialog("roles"); });
+    $("#who-details").addEventListener("click", () => detailsDialog({ mode: "edit" }));
     $("#role-dialog").addEventListener("cancel", ev => { if (!person) ev.preventDefault(); });   // before sign-in the gate stays behind it
   }
   render();
@@ -971,6 +1025,7 @@ async function becomePerson(p) {
   closeDialog();
   await pullServer();
   if (!person) return;
+  if (!(await detailsGate())) return;
   if (state.view === "team" && !isAdmin()) state.view = "walk";
   save(); updateWho(); render(); updateSync(); flush();
   fetchChanges();
@@ -1015,11 +1070,342 @@ function personGone() {
   showDialog("roles", { note: "Your earlier registration is no longer active. Choose your role again." });
 }
 
+/* ---------- author details: affiliations, email, ORCID and more, shared across Symposion pages; CRediT for this project ---------- */
+const DET_SETTINGS = ["Professional sport (club or franchise)", "National governing body or national team", "Olympic and Paralympic programme",
+  "University or collegiate sport", "Amateur and community sport", "Performing arts", "Military and defence", "Public hospital (e.g. NHS)",
+  "Private hospital or clinic", "Primary care or general practice", "University or academic institution", "Research institute",
+  "Industry or commercial", "Other"];
+const DET_CREDIT = [["conceptualization", "Conceptualization"], ["data_curation", "Data curation"], ["formal_analysis", "Formal analysis"],
+  ["funding_acquisition", "Funding acquisition"], ["investigation", "Investigation"], ["methodology", "Methodology"],
+  ["project_administration", "Project administration"], ["resources", "Resources"], ["software", "Software"], ["supervision", "Supervision"],
+  ["validation", "Validation"], ["visualization", "Visualization"], ["writing_original_draft", "Writing: original draft"],
+  ["writing_review_editing", "Writing: review & editing"]];
+const DET_PLATFORMS = ["LinkedIn", "X", "Instagram", "Bluesky", "Threads", "Facebook", "YouTube", "ResearchGate", "Other"];
+const DET_REGIONS = ("AD AE AF AG AI AL AM AO AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BW BY BZ CA CD CF CG CH CI " +
+  "CK CL CM CN CO CR CU CV CW CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GT " +
+  "GU GW GY HK HN HR HT HU ID IE IL IM IN IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC " +
+  "MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PR PS PT " +
+  "PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG " +
+  "US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW").split(" ");
+let DET = null, DET_TEAM = null;
+const detCountries = (() => { let c = null; return () => {
+  if (c) return c;
+  try { const dn = new Intl.DisplayNames(["en-GB"], { type: "region" }); c = [...new Set(DET_REGIONS.map(x => dn.of(x)).filter(Boolean))].sort((a, b) => a.localeCompare(b, "en-GB")); }
+  catch (e) { c = []; }
+  return c; }; })();
+const detCredit = k => (DET_CREDIT.find(c => c[0] === k) || [k, k])[1];
+function orcidOk(v) {
+  if (!/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(v)) return false;
+  const d = v.replace(/-/g, ""); let t = 0;
+  for (let i = 0; i < 15; i++) t = (t + +d[i]) * 2;
+  const r = (12 - (t % 11)) % 11;
+  return d[15] === (r === 10 ? "X" : String(r));
+}
+async function fetchDetails() {
+  const r = await rpc("symposion_details_get", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred });
+  DET = r.mine || null; DET_TEAM = r.team || null;
+  return r;
+}
+async function detFn(action, extra) {
+  let r; try { r = await fetch(CONFIG.supabase.url + "/functions/v1/symposion-reset", { method: "POST",
+    headers: { apikey: CONFIG.supabase.key, Authorization: "Bearer " + CONFIG.supabase.key, "Content-Type": "application/json" },
+    body: JSON.stringify(Object.assign({ action, slug: CONFIG.workstream, person: person.id, pass: cred }, extra)) }); } catch (e) { throw new Error("offline"); }
+  if (r.status === 503) throw new Error("not_configured");
+  let b = null; try { b = await r.json(); } catch (e) {}
+  if (!r.ok) throw new Error("server");
+  if (b && b.error) throw new Error(b.error);
+  return b || {};
+}
+
+/* Before the manuscript opens: the author confirms their details for this page (the administrator is not asked). */
+function detailsComplete(D) {
+  if (!person || person.role === "admin" || person.role === "readonly") return true;
+  if (!D || !D.confirmed) return false;
+  const coiOk = D.coi_none === true || (D.coi_none === false && String(D.coi || "").trim() !== "");
+  return (D.affiliations || []).length > 0 && (D.positions || []).length > 0 && !!D.country && coiOk && (D.credit || []).length > 0;
+}
+let askingDetails = false;
+async function askDetails() {
+  if (askingDetails) return;
+  askingDetails = true;
+  try { if (!DET) await fetchDetails(); } catch (e) {}
+  await new Promise(res => detailsDialog({ mode: "required", done: res }));
+  askingDetails = false;
+  if (detailsComplete(DET) && state.held && state.held.length) {
+    const h = state.held.splice(0); save();
+    h.forEach(q => state.queue.push(q)); save(); updateSync(); flush();
+  }
+}
+async function detailsGate() {
+  const me = person;
+  if (!me || me.role === "readonly") return true;
+  if (me.role === "admin") { try { await fetchDetails(); } catch (e) {} return person === me; }
+  for (;;) {
+    try { await fetchDetails(); break; }
+    catch (e) {
+      await new Promise(res => detailsDialog({ mode: "error", error: e, done: res }));
+      if (person !== me) return false;
+    }
+  }
+  if (detailsComplete(DET)) return true;
+  await new Promise(res => detailsDialog({ mode: DET && DET.source === "other" ? "welcome" : "first", done: res }));
+  return person === me;
+}
+
+function detListEditor(sec, values, opts) {
+  const list = el("div", { class: "det-list" });
+  const add = el("button", { class: "btn quiet det-add", type: "button" }, esc(opts.addLabel));
+  const row = v => {
+    const r = el("div", { class: "det-row" });
+    if (opts.numbered) r.appendChild(el("span", { class: "ix", "aria-hidden": "true" }, ""));
+    if (opts.platform) {
+      const s = el("select", { class: "plat", "aria-label": "Platform" });
+      DET_PLATFORMS.forEach(p => s.appendChild(el("option", { value: p }, esc(p))));
+      s.value = (v && v.platform) || "LinkedIn"; r.appendChild(s);
+    }
+    const i = el("input", { type: "text", maxlength: String(opts.max), "aria-label": opts.label, placeholder: opts.placeholder || "" });
+    i.value = opts.platform ? ((v && v.handle) || "") : (v || ""); r.appendChild(i);
+    if (opts.numbered) {
+      const up = el("button", { type: "button", title: "Move up", "aria-label": "Move up" }, "&uarr;");
+      const dn = el("button", { type: "button", title: "Move down", "aria-label": "Move down" }, "&darr;");
+      up.onclick = () => { if (r.previousElementSibling) list.insertBefore(r, r.previousElementSibling); renum(); };
+      dn.onclick = () => { if (r.nextElementSibling) list.insertBefore(r.nextElementSibling, r); renum(); };
+      r.appendChild(up); r.appendChild(dn);
+    }
+    const x = el("button", { type: "button", title: "Remove", "aria-label": "Remove" }, "&times;");
+    x.onclick = () => { r.remove(); if (!list.children.length && opts.keepOne) list.appendChild(row("")); renum(); };
+    r.appendChild(x);
+    return r;
+  };
+  const renum = () => { [...list.children].forEach((r, i) => { const s = r.querySelector(".ix"); if (s) s.textContent = i + 1; }); add.hidden = list.children.length >= opts.limit; };
+  (values.length ? values : (opts.keepOne ? [""] : [])).forEach(v => list.appendChild(row(v)));
+  add.onclick = () => { const r = row(""); list.appendChild(r); renum(); r.querySelector("input").focus(); };
+  renum();
+  sec.appendChild(list); sec.appendChild(add);
+  return () => [...list.children].map(r => opts.platform
+    ? { platform: r.querySelector("select").value, handle: r.querySelector("input").value.trim() }
+    : r.querySelector("input").value.trim()).filter(v => opts.platform ? v.handle : v);
+}
+
+function detailsDialog(o) {
+  const d = $("#details-dialog"), box = $("#details-body");
+  const gating = o.mode !== "edit";
+  d.oncancel = ev => { if (gating) ev.preventDefault(); };
+  box.innerHTML = "";
+  const finish = () => { if (d.open) d.close(); if (o.done) o.done(); };
+  if (o.mode === "error") {
+    box.appendChild(el("h3", { id: "det-title" }, "Your details"));
+    box.appendChild(el("p", { class: "dlg-note" }, "Your details could not be loaded, and the manuscript opens once they are confirmed."));
+    box.appendChild(el("div", { class: "err", role: "alert" }, esc(MSG[o.error && o.error.message] || MSG.server)));
+    const a = el("div", { class: "dlg-actions" }); const b = el("button", { class: "btn live", type: "button" }, "Try again");
+    b.onclick = finish; a.appendChild(b); box.appendChild(a);
+    if (!d.open) d.showModal(); return;
+  }
+  if (o.mode === "welcome" && !o.review) {
+    box.appendChild(el("h3", { id: "det-title" }, "Welcome back"));
+    box.appendChild(el("p", {}, `Your Symposion details are already held from another page. Please check them for this manuscript before it opens: your affiliations in particular may differ for this work.`));
+    const a = el("div", { class: "dlg-actions" }); const b = el("button", { class: "btn live", type: "button" }, "Review my details");
+    b.onclick = () => detailsDialog(Object.assign({}, o, { review: true })); a.appendChild(b); box.appendChild(a);
+    if (!d.open) d.showModal(); b.focus(); return;
+  }
+  const D = DET || {}, full = true, isAdm = person && person.role === "admin";
+  box.appendChild(el("h3", { id: "det-title" }, "Your details"));
+  box.appendChild(el("p", { class: "dlg-note" }, o.mode === "first"
+    ? "Before anything is submitted on this page, please complete your details for this work: affiliations, role or position, country, declaration of interests and your CRediT contributions. ORCID, work setting and social media handles are optional. Everything can be changed later under Your details at the top of the page."
+    : o.mode === "required" ? "Your details for this work need to be complete before anything is submitted on this page: affiliations, role or position, country, declaration of interests and your CRediT contributions. What you entered has been kept on this device and is saved as soon as your details are complete."
+    : o.mode === "welcome" ? "Check each part, change anything that differs for this manuscript, then confirm. Everything except your CRediT contributions is shared with your other Symposion pages."
+    : "Everything except your CRediT contributions is shared with your other Symposion pages, so a change here applies there too."));
+  const f = el("form", { autocomplete: "off", novalidate: "" });
+  const sec = (title, opt) => { const s = el("section", { class: "det-sec" }); s.appendChild(el("h4", {}, esc(title) + (opt ? ` <span class="opt">(${opt})</span>` : ""))); f.appendChild(s); return s; };
+
+  const sA = sec("Affiliations for this work");
+  sA.appendChild(el("p", { class: "dlg-note" }, "Each institution or organisation separately, in the order it should appear with your name. At least one is needed."));
+  const getAff = detListEditor(sA, D.affiliations || [], { numbered: true, keepOne: true, limit: 10, max: 300, addLabel: "+ Add another affiliation",
+    label: "Affiliation", placeholder: "e.g. School of Medicine, University of St Andrews, St Andrews, UK" });
+
+  if (!isAdm) {
+    const sE = sec("Email for Symposion");
+    const em = el("div", { class: "det-email" });
+    em.innerHTML = `<b>${esc(D.email || "None held")}</b>`;
+    const ch = el("button", { class: "linkish", type: "button" }, "Change email"); em.appendChild(ch); sE.appendChild(em);
+    const ef = el("div", {}); sE.appendChild(ef);
+    ch.onclick = () => {
+      ch.hidden = true; ef.innerHTML = "";
+      ef.appendChild(el("p", { class: "dlg-note" }, "A one-time code will be sent to the new address. The change takes effect on all your Symposion pages once you enter it, and a notice goes to your current address."));
+      const r1 = el("div", { class: "det-row" }); const ni = el("input", { type: "email", "aria-label": "New email address", placeholder: "New email address", maxlength: "254" });
+      const sb = el("button", { class: "btn quiet", type: "button", style: "width:auto;height:auto" }, "Email me a code");
+      r1.appendChild(ni); r1.appendChild(sb); ef.appendChild(r1);
+      sb.onclick = async () => {
+        ef.querySelectorAll(".err,.det-ok").forEach(x => x.remove());
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(ni.value.trim())) { ef.appendChild(el("div", { class: "err", role: "alert" }, esc(MSG.bad_email))); return; }
+        sb.disabled = true;
+        try {
+          await detFn("email_change", { email: ni.value.trim() });
+          ni.disabled = true;
+          ef.appendChild(el("p", { class: "det-ok" }, `A code is on its way to ${esc(ni.value.trim())}. Check that inbox and its junk folder, then enter the code here.`));
+          const r2 = el("div", { class: "det-row" }); const ci = el("input", { type: "text", "aria-label": "One-time code", placeholder: "One-time code", maxlength: "20", autocomplete: "one-time-code", spellcheck: "false" });
+          const cb = el("button", { class: "btn live", type: "button", style: "width:auto;height:auto" }, "Confirm new email");
+          r2.appendChild(ci); r2.appendChild(cb); ef.appendChild(r2); ci.focus();
+          cb.onclick = async () => {
+            ef.querySelectorAll(".err").forEach(x => x.remove()); cb.disabled = true;
+            try {
+              const r = await detFn("email_confirm", { code: ci.value });
+              if (DET) DET.email = r.email; D.email = r.email;
+              em.querySelector("b").textContent = r.email; ch.hidden = false; ef.innerHTML = "";
+              ef.appendChild(el("p", { class: "det-ok" }, "Your email has been changed on all your Symposion pages."));
+            } catch (e) { cb.disabled = false; ef.appendChild(el("div", { class: "err", role: "alert" }, esc(MSG[e.message] || MSG.server))); }
+          };
+        } catch (e) { sb.disabled = false; ef.appendChild(el("div", { class: "err", role: "alert" }, esc(MSG[e.message] || MSG.server))); }
+      };
+      ni.focus();
+    };
+  }
+
+  const sO = sec("ORCID", "optional");
+  const oi = el("input", { type: "text", maxlength: "40", "aria-label": "ORCID iD", placeholder: "0000-0000-0000-0000" });
+  oi.value = D.orcid || ""; const or = el("div", { class: "det-row" }); or.appendChild(oi); sO.appendChild(or);
+
+  let getPos = () => D.positions || [], getSoc = () => D.socials || [], getSettings = () => D.settings || [];
+  let ctry = { value: D.country || "" }, sOther = { value: D.settings_other || "" }, coiNone = D.coi_none, coiText = { value: D.coi || "" }, getCredit = () => D.credit || [];
+  if (full) {
+    const sP = sec("Professional role(s) or position(s)");
+    getPos = detListEditor(sP, D.positions || [], { limit: 8, max: 200, addLabel: "+ Add another role or position", label: "Role or position", placeholder: "e.g. Consultant in Sport and Exercise Medicine" });
+
+    const sC = sec("Main country of work");
+    const cs = el("select", { "aria-label": "Main country of work" });
+    cs.appendChild(el("option", { value: "" }, "Choose a country"));
+    const names = detCountries(); if (D.country && !names.includes(D.country)) names.unshift(D.country);
+    names.forEach(n => cs.appendChild(el("option", { value: n }, esc(n))));
+    cs.value = D.country || ""; const cr = el("div", { class: "det-row" }); cr.appendChild(cs); sC.appendChild(cr); ctry = cs;
+
+    const sS = sec("Main work context or setting", "select all that apply");
+    const ck = el("div", { class: "det-checks" });
+    DET_SETTINGS.forEach(s => { const l = el("label", {}); l.innerHTML = `<input type="checkbox" value="${esc(s)}"${(D.settings || []).includes(s) ? " checked" : ""}> <span>${esc(s === "Other" ? "Other, please specify" : s)}</span>`; ck.appendChild(l); });
+    sS.appendChild(ck);
+    const ot = el("input", { type: "text", maxlength: "200", "aria-label": "Other work setting", placeholder: "Please specify" });
+    ot.value = D.settings_other || ""; const orow = el("div", { class: "det-row" }); orow.appendChild(ot); sS.appendChild(orow);
+    const otherBox = ck.querySelector('input[value="Other"]');
+    const syncOther = () => { orow.hidden = !otherBox.checked; }; otherBox.onchange = syncOther; syncOther();
+    getSettings = () => [...ck.querySelectorAll("input:checked")].map(x => x.value); sOther = ot;
+
+    const sI = sec("Declaration of interests");
+    const rd = el("div", { class: "det-radio" });
+    rd.innerHTML = `<label><input type="radio" name="coi" value="none"${D.coi_none === true ? " checked" : ""}> None to declare</label>` +
+      `<label><input type="radio" name="coi" value="some"${D.coi_none === false ? " checked" : ""}> I have interests to declare</label>`;
+    sI.appendChild(rd);
+    const ta = el("textarea", { maxlength: "2000", "aria-label": "Interests to declare", placeholder: "Financial and non-financial interests relevant to this work" });
+    ta.value = D.coi || ""; sI.appendChild(ta);
+    const syncCoi = () => { ta.hidden = !rd.querySelector('input[value="some"]').checked; };
+    rd.querySelectorAll("input").forEach(i => i.onchange = syncCoi); syncCoi();
+    coiText = ta; Object.defineProperty(sI, "_none", { get: () => { const c = rd.querySelector("input:checked"); return c ? c.value === "none" : null; } });
+    coiNone = sI;
+
+    const sR = sec("Your contributions to this project (CRediT)", "select all that apply");
+    sR.appendChild(el("p", { class: "dlg-note" }, "For this manuscript only, using the CRediT contributor roles."));
+    const rk = el("div", { class: "det-checks" });
+    DET_CREDIT.forEach(([k, n]) => { const l = el("label", {}); l.innerHTML = `<input type="checkbox" value="${k}"${(D.credit || []).includes(k) ? " checked" : ""}> <span>${esc(n)}</span>`; rk.appendChild(l); });
+    sR.appendChild(rk); getCredit = () => [...rk.querySelectorAll("input:checked")].map(x => x.value);
+
+    const sM = sec("Social media handles", "optional");
+    getSoc = detListEditor(sM, D.socials || [], { platform: true, limit: 8, max: 200, addLabel: "+ Add a handle", label: "Handle or profile address", placeholder: "@handle or profile address" });
+  } else {
+    f.appendChild(el("p", { class: "dlg-note", style: "margin-top:18px" }, "Your roles or positions, country, work settings, declaration of interests, CRediT contributions and social media handles can be added under Your details at any time."));
+  }
+
+  const acts = el("div", { class: "dlg-actions" });
+  const save = el("button", { class: "btn live", type: "submit" }, gating ? "Confirm my details" : "Save my details");
+  acts.appendChild(save);
+  if (gating && !isAdm) { const later = el("button", { class: "btn quiet", type: "button" }, "Complete later"); later.onclick = finish; acts.appendChild(later); }
+  if (!gating) { const c = el("button", { class: "btn quiet", type: "button" }, "Cancel"); c.onclick = () => d.close(); acts.appendChild(c); }
+  f.appendChild(acts);
+  f.onsubmit = async ev => {
+    ev.preventDefault();
+    f.querySelectorAll(":scope > .err").forEach(x => x.remove());
+    const fail = k => { const e = el("div", { class: "err", role: "alert" }, esc(MSG[k] || MSG.server)); f.insertBefore(e, acts); e.scrollIntoView({ block: "nearest" }); };
+    const aff = getAff();
+    if (!aff.length) return fail("no_affiliation");
+    if (!isAdm) {
+      if (!getPos().length) return fail("need_position");
+      if (!ctry.value) return fail("need_country");
+      const cn = coiNone._none; if (cn === null || cn === undefined) return fail("need_coi");
+      if (cn === false && !coiText.value.trim()) return fail("need_coi_text");
+      if (!getCredit().length) return fail("need_credit");
+    }
+    const orc = oi.value.trim().toUpperCase().replace(/^(HTTPS?:\/\/)?(WWW\.)?ORCID\.ORG\//, "");
+    if (orc && !orcidOk(orc)) return fail("bad_orcid");
+    const sets = getSettings();
+    if (sets.includes("Other") && !sOther.value.trim()) return fail("other_setting");
+    const none = full ? coiNone._none : D.coi_none;
+    const det = { affiliations: aff, orcid: orc, positions: getPos(), country: ctry.value, settings: sets, settings_other: sOther.value,
+      socials: getSoc(), coi_none: none === undefined ? null : none, coi: none ? "" : coiText.value, credit: getCredit() };
+    save.disabled = true;
+    try {
+      const r = await rpc("symposion_details_save", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_details: det, p_confirm: true });
+      DET = r.mine;
+      if (DET_TEAM) { const t = DET_TEAM.find(x => x.id === person.id); if (t) t.details = r.mine; }
+      finish();
+      if (!gating && state.view === "map") render();
+    } catch (e) { save.disabled = false; fail(e.message); }
+  };
+  box.appendChild(f);
+  if (!d.open) d.showModal();
+  const first = f.querySelector(".det-list input"); if (first && !first.value) first.focus();
+}
+
+function detSummary(D) {
+  const aff = (D.affiliations || []).length ? `<ol>${D.affiliations.map(a => `<li>${esc(a)}</li>`).join("")}</ol>` : "<p class='hint'>No affiliations yet.</p>";
+  const rows = [["Email", D.email], ["ORCID", D.orcid], ["Roles or positions", (D.positions || []).join("; ")], ["Country", D.country],
+    ["Work settings", (D.settings || []).map(s => s === "Other" ? (D.settings_other || "Other") : s).join("; ")],
+    ["Interests", D.coi_none === true ? "None to declare" : D.coi_none === false ? D.coi : ""],
+    ["CRediT", (D.credit || []).map(detCredit).join("; ")],
+    ["Social media", (D.socials || []).map(s => `${s.platform}: ${s.handle}`).join("; ")]].filter(r => r[1]);
+  return aff + (rows.length ? `<dl class="dl">${rows.map(([a, b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl>` : "");
+}
+function detailsPanel() {
+  if (!person || readOnly() || !DET) return null;
+  const s = el("section", { class: "yourdetails", "aria-label": "Your details" });
+  s.innerHTML = `<h3>Your details</h3>` + detSummary(DET);
+  const b = el("button", { class: "btn quiet", type: "button" }, "Edit your details");
+  b.onclick = () => detailsDialog({ mode: "edit" }); s.appendChild(b);
+  if (LEAD_VIEW() && DET_TEAM && DET_TEAM.length) {
+    s.appendChild(el("h3", { style: "margin-top:22px" }, "Author details"));
+    s.appendChild(el("p", { class: "hint" }, "As each author has given them. Shown to the lead reviewer, the senior author and the administrator only."));
+    let t = "<div class='scroll'><table class='teamtable authordetails'><thead><tr><th>Author</th><th>Affiliations</th><th>Email and ORCID</th><th>Interests</th><th>CRediT</th><th>Confirmed</th></tr></thead><tbody>";
+    DET_TEAM.forEach(p => {
+      const D = p.details || {};
+      t += `<tr><td>${esc(p.label)}</td><td>${(D.affiliations || []).length ? `<ol>${D.affiliations.map(a => `<li>${esc(a)}</li>`).join("")}</ol>` : ""}</td>` +
+        `<td>${esc(D.email || "")}${D.orcid ? `<br>${esc(D.orcid)}` : ""}</td><td>${D.coi_none === true ? "None" : esc(D.coi || "")}</td>` +
+        `<td>${esc((D.credit || []).map(detCredit).join("; "))}</td><td>${D.confirmed ? "Yes" : ""}</td></tr>`;
+    });
+    s.appendChild(el("div", {}, t + "</tbody></table></div>"));
+    const dl = el("button", { class: "btn quiet", type: "button" }, "Download author details (CSV)");
+    dl.onclick = () => detailsCsv(); s.appendChild(dl);
+  }
+  return s;
+}
+function detailsCsv() {
+  const q = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  const head = ["Order", "Author", "Affiliations (in order)", "Email", "ORCID", "Roles or positions", "Country", "Work settings", "Interests", "CRediT", "Social media", "Confirmed for this page"];
+  const lines = [head.map(q).join(",")];
+  DET_TEAM.forEach((p, i) => {
+    const D = p.details || {};
+    lines.push([i + 1, p.label, (D.affiliations || []).map((a, j) => `${j + 1}. ${a}`).join("; "), D.email, D.orcid, (D.positions || []).join("; "), D.country,
+      (D.settings || []).map(s => s === "Other" ? `Other: ${D.settings_other || ""}` : s).join("; "),
+      D.coi_none === true ? "None to declare" : (D.coi || ""), (D.credit || []).map(detCredit).join("; "),
+      (D.socials || []).map(s => `${s.platform}: ${s.handle}`).join("; "), D.confirmed ? "Yes" : "No"].map(q).join(","));
+  });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" }));
+  a.download = `${CONFIG.workstream}_author_details.csv`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
 function updateWho() {
   const w = $("#who");
   w.hidden = !person;
   if (person) $("#who-label").textContent = readOnly() ? "Read only" : personFull(person);
   $("#nav-team").hidden = !isAdmin();
+  $("#who-details").hidden = !person || readOnly();
   document.body.classList.toggle("ro", readOnly());
 }
 
@@ -1136,6 +1522,7 @@ function renderMap() {
     y.innerHTML = `<h3>Your part${person.role === "readonly" ? "" : ", as " + esc(personFull(person))}</h3><p>${esc(guide)}</p>`;
     m.appendChild(y);
   }
+  const dp = detailsPanel(); if (dp) m.appendChild(dp);
   m.appendChild(el("h3", {}, "How it works"));
   const how = el("ol", { class: "howto" }); how.innerHTML = OVR.howto_html || CONTENT.howto_html; m.appendChild(how);
   m.appendChild(el("h3", {}, "The steps"));
@@ -1250,6 +1637,7 @@ async function renderBoard(fresh = true) {
   comp.querySelector("#cm-post").onclick = async ev => {
     const btn = ev.currentTarget; comp.querySelectorAll(".err").forEach(x => x.remove());
     if (!body.value.trim()) { comp.appendChild(el("div", { class: "err", role: "alert" }, "Write the comment first.")); return; }
+    if (!detailsComplete(DET)) { await askDetails(); if (!detailsComplete(DET)) return; }
     btn.disabled = true; btn.textContent = "Posting";
     try {
       await rpc("symposion_board_post", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_section: sel.value, p_item: item.value, p_body: body.value, p_reply_to: readDraft().reply });
@@ -1414,6 +1802,7 @@ function openChange(pre = {}) {
     form.querySelectorAll(".err").forEach(x => x.remove());
     const body = box.querySelector("#chg-body").value;
     if (!body.trim()) { form.appendChild(el("div", { class: "err", role: "alert" }, "Write what should change first.")); return; }
+    if (!detailsComplete(DET)) { await askDetails(); if (!detailsComplete(DET)) return; }
     const btn = form.querySelector("button[type=submit]"); btn.disabled = true; btn.textContent = "Sending";
     try {
       const r = await rpc("symposion_change_post", { p_slug: CONFIG.workstream, p_person: person.id, p_pass: cred, p_kind: kindOf(),
@@ -1936,6 +2325,11 @@ function renderDecisions() {
 /* ---------- progress: saved at Symposion against the person, with a copy kept on this device ---------- */
 function queueEvent(step_key, event, recorded) {
   if (!person || !person.id || readOnly()) return;
+  if (!detailsComplete(DET)) {
+    state.held = state.held || [];
+    state.held.push({ route: state.route, step_key, event, recorded: recorded || {}, local_at: new Date().toISOString() });
+    save(); askDetails(); return;
+  }
   state.queue.push({ route: state.route, step_key, event, recorded: recorded || {}, local_at: new Date().toISOString() });
   save(); updateSync(); flush();
 }
